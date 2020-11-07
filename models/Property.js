@@ -1,5 +1,10 @@
 const database = require('../services/database');
 
+// example queries:
+// localhost:5000/api/properties
+// localhost:5000/api/properties?zid=4&ncode=6
+
+
 const baseQuery =
   `SELECT pid "PID",
       zid "zid",
@@ -10,18 +15,31 @@ const baseQuery =
       legal_type "legal_type",
       plan_no "plan_no",
       block_no "block_no"
-    FROM property`;
+    FROM property
+    WHERE 1=1`;
 
 async function find(context) {
   let query = baseQuery;
   const binds = {};
 
-  // WHERE
-  if (context.id) {
-    binds.pid = context.id;
-
-    query += `\nWHERE pid = :pid`;
+  // PID
+  if (context.pid) {
+    binds.pid = context.pid;
+    query += `\nAND pid = :pid`;
   }
+
+  // NCODE
+  if (context.ncode) {
+    binds.ncode = context.ncode;
+    query += '\nAND ncode = :ncode';
+  }
+
+  // ZID
+  if (context.zid) {
+    binds.zid = context.zid;
+    query += '\nAND zid = :zid';
+  }
+
 
   // SKIP
   if (context.skip) {
