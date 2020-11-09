@@ -10,11 +10,7 @@ const baseQuery =
       zid "zid",
       ncode "ncode",
       year_built "year_built",
-      lot "lot",
-      district_lot "district_lot",
-      legal_type "legal_type",
-      plan_no "plan_no",
-      block_no "block_no"
+      legal_type "legal_type"
     FROM property
     WHERE 1=1`;
 
@@ -40,6 +36,30 @@ async function find(context) {
     query += '\nAND zid = :zid';
   }
 
+  // YEAR_BUILT
+  if (context.year_built) {
+    binds.year_built = context.year_built;
+    query += '\n AND year_built = :year_built';
+  }
+
+  // YEAR_BUILT BETWEEN
+  if (context.year_built_bw_first && context.year_built_bw_sec) {
+      binds.year_built_bw_first = context.year_built_bw_first;
+      binds.year_built_bw_sec = context.year_built_bw_sec;
+      query += '\n AND year_built BETWEEN :year_built_bw_first AND :year_built_bw_sec';
+    }
+
+  // YEAR_BUILT BEFORE
+  if (context.year_built_before) {
+    binds.year_built = context.year_built_before;
+    query += '\n AND year_built < :year_built';
+  }
+
+  // YEAR_BUILT AFTER
+  if (context.year_built_after) {
+    binds.year_built = context.year_built_after;
+    query += '\n AND year_built > :year_built';
+  }
 
   // SKIP
   if (context.skip) {

@@ -14,6 +14,18 @@ async function get(req, res, next) {
 
     context.zid = parseInt(req.query.zid, 10);
 
+    context.year_built = parseInt(req.query.year_built, 10);
+
+    context.year_built_before = parseInt(req.query.year_built_before, 10);
+
+    context.year_built_after = parseInt(req.query.year_built_after, 10);
+
+    context.year_built_bw_first = parseInt(req.query.year_built_bw_first, 10);
+
+    context.year_built_bw_sec = parseInt(req.query.year_built_bw_sec, 10);
+
+    
+
     const rows = await properties.find(context);
 
     if (req.params.pid) {
