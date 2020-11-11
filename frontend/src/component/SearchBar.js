@@ -1,9 +1,9 @@
 import { Dropdown, Input } from 'semantic-ui-react'
 
 const options = [
-  { key: 'page', text: 'This Page', value: 'page' },
-  { key: 'org', text: 'This Organization', value: 'org' },
-  { key: 'site', text: 'Entire Site', value: 'site' },
+  { key: 'page', text: 'Property Value', value: 'page' },
+  { key: 'org', text: 'Property Location', value: 'org' },
+  { key: 'site', text: 'Date Time', value: 'site' },
 ]
 
 /**

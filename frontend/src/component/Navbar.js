@@ -5,15 +5,12 @@ import { Menu } from 'semantic-ui-react';
  */
 const NavBar = () => {
     return(       
-       <Menu inverted pointing widths={3}>
+       <Menu inverted pointing widths={2}>
       <Menu.Item
         name='home'
       />
       <Menu.Item
-        name='messages'
-      />
-      <Menu.Item
-        name='friends'
+        name='Login'
       />
     </Menu>);
 
