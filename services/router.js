@@ -8,4 +8,16 @@ router.route('/properties/:pid?')
     // .put(properties.put)
     // .delete(properties.delete);
 
+router.route('/neighborhoods/:ncode?')
+    .get(neighborhoods.get);
+    // .post(properties.post)
+    // .put(properties.put)
+    // .delete(properties.delete);
+
+router.route('/users/:uid?')
+    .get(users.get)
+    .post(users.post);
+    // .put(properties.put)
+    // .delete(properties.delete);    
+
 module.exports = router;

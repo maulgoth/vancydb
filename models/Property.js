@@ -72,6 +72,8 @@ async function find(context) {
   binds.row_limit = limit;
   query += '\nFETCH NEXT :row_limit ROWS ONLY';
 
+  // ORDER 
+
   // Fetch result
   const result = await database.simpleExecute(query, binds);
 
