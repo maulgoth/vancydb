@@ -4,14 +4,20 @@ async function get(req, res, next) {
   try {
     const context = {};
 
-    context.selection = req.params.selection;
+    context.selection = req.query.selection;
 
-    context.math = req.params.math;
-    
-    const rows;
+    context.math = req.query.math;
 
-    if (context.math === "avg")
+    console.log(context.math);
+
+    console.log(context.selection);
+
+    let rows = [];
+
+    if (context.math === "avg") {
         rows = await neighborhoods.avg(context);
+    
+    }
 
     res.status(200).json(rows);
 
