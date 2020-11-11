@@ -1,25 +1,23 @@
-
+import { Menu } from 'semantic-ui-react';
 
 /**
  * Component used to perform navigation between different app views
  */
 const NavBar = () => {
-    return(
-        <Menu pointing secondary vertical>
-        <Menu.Item
-          name='home'
-          onClick={this.handleItemClick}
-        />
-        <Menu.Item
-          name='messages'
-          onClick={this.handleItemClick}
-        />
-        <Menu.Item
-          name='friends'
-          onClick={this.handleItemClick}
-        />
-      </Menu>
-    );
+    return(       
+       <Menu inverted pointing widths={3}>
+      <Menu.Item
+        name='home'
+      />
+      <Menu.Item
+        name='messages'
+      />
+      <Menu.Item
+        name='friends'
+      />
+    </Menu>);
+
+    
 }
 
 export default NavBar;
