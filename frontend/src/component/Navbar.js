@@ -7,10 +7,12 @@ const NavBar = () => {
     return(       
        <Menu inverted pointing widths={2}>
       <Menu.Item
-        name='home'
+        name='Chart'
+        href="/chart"
       />
       <Menu.Item
-        name='Login'
+        name='Map'
+        href="/map"
       />
     </Menu>);
 

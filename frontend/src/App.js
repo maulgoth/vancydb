@@ -4,25 +4,33 @@ import Chart from './component/Chart';
 import Map from './component/Map';
 import SearchBar from './component/SearchBar';
 import { Grid, GridRow, Segment} from 'semantic-ui-react'
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 
 function App() {
   return (
+    <Router>
     <div className="App">
       <NavBar/>
       <SearchBar/>
-      <Grid columns={2} divided padded>
-        <Grid.Column>
+      <Switch>
+        <Route path="/chart">
           <Segment>
-             <Chart/>
-          </Segment>
-        </Grid.Column>
-        <Grid.Column>
-          <Segment>
-          <Map/>
-          </Segment>
-        </Grid.Column>
-      </Grid>
+        <Chart/>
+        </Segment>
+        </Route>
+        <Route path="/map">
+        <Segment>
+        <Map/>
+        </Segment>
+          </Route>
+      </Switch>
     </div>
+    </Router>
   );
 }
 
