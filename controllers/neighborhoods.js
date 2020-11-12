@@ -10,6 +10,19 @@ async function get(req, res, next) {
     // AVG, MEDIAN, MAX, MIN
     context.math = req.query.math;
 
+    context.year_built = parseInt(req.query.year_built, 10);
+
+    context.year_built_before = parseInt(req.query.year_built_before, 10);
+
+    context.year_built_after = parseInt(req.query.year_built_after, 10);
+
+    context.year_built_bw_first = parseInt(req.query.year_built_bw_first, 10);
+
+    context.year_built_bw_sec = parseInt(req.query.year_built_bw_sec, 10);
+
+    
+    context.z_category = req.query.z_category;
+
     const rows = await neighborhoods.find(context);
 
     res.status(200).json(rows);

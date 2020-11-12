@@ -11,7 +11,7 @@ router.route('/properties/:pid?')
     // .put(properties.put)
     // .delete(properties.delete);
 
-router.route('/neighborhoods/:ncode?')
+router.route('/neighborhoods/')
     .get(neighborhoods.get);
     // .post(properties.post)
     // .put(properties.put)
