@@ -1,35 +1,31 @@
-import './App.css';
-import NavBar from './component/NavBar';
-import Chart from './component/Chart';
-import Map from './component/Map';
-import SearchBar from './component/SearchBar';
-import { Grid, GridRow, Segment} from 'semantic-ui-react'
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
+import "./App.css";
+import NavBar from "./component/NavBar";
+import Chart from "./component/Chart";
+import Map from "./component/Map";
+import SearchBar from "./component/SearchBar";
+
+import { Grid, GridRow, Segment } from "semantic-ui-react";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 function App() {
   return (
     <Router>
-    <div className="App">
-      <NavBar/>
-      <SearchBar/>
-      <Switch>
-        <Route path="/chart">
-          <Segment>
-        <Chart/>
-        </Segment>
-        </Route>
-        <Route path="/map">
-        <Segment>
-        <Map/>
-        </Segment>
+      <div className="App">
+        <NavBar />
+        {/* <SearchBar/> */}
+        <Switch>
+          <Route path="/chart">
+            <Segment>
+              <Chart />
+            </Segment>
           </Route>
-      </Switch>
-    </div>
+          <Route path="/map">
+            <Segment>
+              <Map />
+            </Segment>
+          </Route>
+        </Switch>
+      </div>
     </Router>
   );
 }
