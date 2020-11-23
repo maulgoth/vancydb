@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const properties = require('../controllers/properties');
 const neighborhoods = require('../controllers/neighborhoods');
+const charts = require('../controllers/charts');
 //const users = require('../controllers/users');
 
 
@@ -16,6 +17,9 @@ router.route('/neighborhoods/')
     // .post(properties.post)
     // .put(properties.put)
     // .delete(properties.delete);
+
+router.route('/charts/')
+    .get(charts.get);
 
 /*
 router.route('/users/:uid?')

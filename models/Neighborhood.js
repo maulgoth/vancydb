@@ -1,29 +1,22 @@
-const database = require('../services/database');
+const database = require("../services/database");
 
 // example queries:
-// localhost:5000/api/properties
-// localhost:5000/api/properties?zid=4&ncode=6
-
-
+// localhost:5000/api/neighborhoods
+// localhost:5000/api/neighborhoods?selection=lv&math=avg
 
 async function find(context) {
+  // Final array concatenates SELECT of each neighborhood
+  let final = [];
+  // Store selection and math operation choices
+  const math = context.math;
+  const selection = context.selection;
+  let choice;
+  if (selection === "iv") choice = "improvement_value";
+  else if (selection === "lv") choice = "land_value";
+  else if (selection == "tl") choice = "tax_levy";
 
-    // Final array concatenates SELECT of each neighborhood
-    let final = [];
-    // Store selection and math operation choices
-    const math = context.math;
-    const selection = context.selection;
-    let choice;
-    if (selection === "iv")
-        choice = "improvement_value";
-    else if (selection === "lv")
-        choice = "land_value";
-    else if (selection == "tl")
-        choice = "tax_levy";
-
-    for (i = 1; i < 23; i++) {
-        let query =
-            `SELECT 
+  for (i = 1; i < 23; i++) {
+    let query = `SELECT 
             ROUND(${math}(${selection}_2006), 0) "${selection}_2006_${i}",
             ROUND(${math}(${selection}_2007), 0) "${selection}_2007_${i}",
             ROUND(${math}(${selection}_2008), 0) "${selection}_2008_${i}",
@@ -42,54 +35,49 @@ async function find(context) {
             FROM ${choice} x
             JOIN property p ON x.pid = p.pid`;
 
-            // CHOOSE ZONE CATEGORY
-            if (context.z_category) {
-                query += ` JOIN zones z ON p.zid = z.zid
+    // CHOOSE ZONE CATEGORY
+    if (context.z_category) {
+      query += ` JOIN zones z ON p.zid = z.zid
                 WHERE z_category='${context.z_category}'`;
-            } 
-            else {
-                query += ` WHERE 1 = 1 `;
-            }
-
-            query += `\n AND p.ncode = ${i}`;
-
-            
-            const binds = {};
-
-            // YEAR_BUILT
-            if (context.year_built) {
-                binds.year_built = context.year_built;
-                query += '\n AND year_built = :year_built';
-            }
-
-            // YEAR_BUILT BETWEEN
-            if (context.year_built_bw_first && context.year_built_bw_sec) {
-                binds.year_built_bw_first = context.year_built_bw_first;
-                binds.year_built_bw_sec = context.year_built_bw_sec;
-                query += '\n AND year_built BETWEEN :year_built_bw_first AND :year_built_bw_sec';
-                }
-
-            // YEAR_BUILT BEFORE
-            if (context.year_built_before) {
-                binds.year_built = context.year_built_before;
-                query += '\n AND year_built < :year_built';
-            }
-
-            // YEAR_BUILT AFTER
-            if (context.year_built_after) {
-                binds.year_built = context.year_built_after;
-                query += '\n AND year_built > :year_built';
-            }
-
-
-
-        const result = await database.simpleExecute(query, binds);
-        final = final.concat(result.rows);
-        
+    } else {
+      query += ` WHERE 1 = 1 `;
     }
-    
-    return final;
-    
+
+    query += `\n AND p.ncode = ${i}`;
+
+    const binds = {};
+
+    // YEAR_BUILT
+    if (context.year_built) {
+      binds.year_built = context.year_built;
+      query += "\n AND year_built = :year_built";
+    }
+
+    // YEAR_BUILT BETWEEN
+    if (context.year_built_bw_first && context.year_built_bw_sec) {
+      binds.year_built_bw_first = context.year_built_bw_first;
+      binds.year_built_bw_sec = context.year_built_bw_sec;
+      query +=
+        "\n AND year_built BETWEEN :year_built_bw_first AND :year_built_bw_sec";
+    }
+
+    // YEAR_BUILT BEFORE
+    if (context.year_built_before) {
+      binds.year_built = context.year_built_before;
+      query += "\n AND year_built < :year_built";
+    }
+
+    // YEAR_BUILT AFTER
+    if (context.year_built_after) {
+      binds.year_built = context.year_built_after;
+      query += "\n AND year_built > :year_built";
+    }
+
+    const result = await database.simpleExecute(query, binds);
+    final = final.concat(result.rows);
+  }
+
+  return final;
 }
 
 module.exports.find = find;

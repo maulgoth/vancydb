@@ -1,8 +1,10 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 require('dotenv').config();
 const port = process.env.HTTP_PORT || 5000;
 const app = express();
+app.use(cors());
 const router = require('./services/router');
 const database = require('./services/database');
 const dbConfig = require('./config/database');
