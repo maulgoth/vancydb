@@ -3,7 +3,7 @@ const router = express.Router();
 const properties = require('../controllers/properties');
 const neighborhoods = require('../controllers/neighborhoods');
 const charts = require('../controllers/charts');
-//const users = require('../controllers/users');
+const fillmap = require('../controllers/fillmap');
 
 
 router.route('/properties/:pid?')
@@ -21,12 +21,7 @@ router.route('/neighborhoods/')
 router.route('/charts/')
     .get(charts.get);
 
-/*
-router.route('/users/:uid?')
-    .get(users.get)
-    .post(users.post);
-    // .put(properties.put)
-    // .delete(properties.delete);
-*/
+router.route('/fillmap/')
+    .get(fillmap.get);
 
 module.exports = router;

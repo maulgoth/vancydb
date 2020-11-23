@@ -5,6 +5,8 @@ async function initialize() {
   const pool = await oracledb.createPool(dbConfig.testPool);
 }
 
+oracledb.fetchAsString = [ oracledb.CLOB ];
+
 module.exports.initialize = initialize;
 
 // Database Execution, used by oracledb
