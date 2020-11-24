@@ -77,14 +77,14 @@ const processData = (data) => {
   }));
 };
 
-export default class Chart extends Component {
+export default class Map extends Component {
   state = {
     isLoaded: false,
-    nhoods: [],
-    year_built_first: 1900,
-    year_built_sec: 2020,
+    outlines: [],
+    year_built_bw_first: 1900,
+    year_built_bw_sec: 2020,
     ncode: 0,
-    z_category: null,
+    zcategory: "",
     selection: "lv",
     math: "avg",
   };
@@ -105,7 +105,7 @@ export default class Chart extends Component {
               : this.state.z_category,
           year_built_first: this.state.year_built_first,
           year_built_sec: this.state.year_built_sec,
-        },
+        }
       })
       .then((res) => {
         const nhoods = res.data;
