@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Select, Button, Checkbox, Form } from "semantic-ui-react";
 import { curveCatmullRom } from "d3-shape";
 import {
   XYPlot,
@@ -9,6 +10,18 @@ import {
   LineSeries,
 } from "react-vis";
 import axios from "axios";
+
+const selections = [
+  { key: "selection", value: "lv", text: "Land Value" },
+  { key: "selection", value: "tl", text: "Tax Levy" },
+  { key: "selection", value: "iv", text: "Improvement Value" },
+];
+
+const maths = [
+  { key: "math", value: "avg", text: "Average" },
+  { key: "math", value: "median", text: "Median" },
+  { key: "math", value: "max", text: "Maximum" },
+];
 
 const processData = (data) => {
   return data.map((e) => ({
@@ -29,18 +42,11 @@ export default class Chart extends Component {
     math: "avg",
   };
 
-  handleChange(event) {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-    this.setState({
-      [name]: value,
-    });
-  }
+  handleChange = (e, { name, value }) => this.setState({ [name]: value });
 
   handleSubmit(event) {
     event.preventDefault();
-    this.setState({isLoaded: false})
+    this.setState({ isLoaded: false });
     axios
       .get("http://localhost:5000/api/charts", {
         params: {
@@ -77,61 +83,61 @@ export default class Chart extends Component {
   render() {
     return (
       <div>
-        <div>
-          <XYPlot
-            width={800}
-            height={600}
-            xDomain={[2006, 2020]}
-            margin={{ left: 100, right: 100 }}
-          >
-            <HorizontalGridLines style={{ stroke: "#B7E9ED" }} />
-            <VerticalGridLines style={{ stroke: "#B7E9ED" }} />
-            <XAxis
-              style={{
-                line: { stroke: "#ADDDE1" },
-                ticks: { stroke: "#ADDDE1" },
-                text: { stroke: "none", fill: "#6b6b76", fontWeight: 600 },
-              }}
-              tickFormat={(v) => `${v}`}
-            />
-            <YAxis title="$ CAD" />
-            <LineSeries
-              className="first-series"
-              data={
-                this.state.isLoaded
-                  ? processData(this.state.nhoods)
-                  : [{ x: 0, y: 0 }]
-              }
-              style={{
-                strokeLinejoin: "round",
-                strokeWidth: 4,
-              }}
-            />
-          </XYPlot>
-        </div>
-        <div>
-          <form onSubmit={this.handleSubmit.bind(this)}>
-            <select
+        <XYPlot
+          width={800}
+          height={600}
+          xDomain={[2006, 2020]}
+          margin={{ left: 100, right: 100 }}
+        >
+          <HorizontalGridLines style={{ stroke: "#B7E9ED" }} />
+          <VerticalGridLines style={{ stroke: "#B7E9ED" }} />
+          <XAxis
+            style={{
+              line: { stroke: "#ADDDE1" },
+              ticks: { stroke: "#ADDDE1" },
+              text: { stroke: "none", fill: "#6b6b76", fontWeight: 600 },
+            }}
+            tickFormat={(v) => `${v}`}
+          />
+          <YAxis title="$ CAD" />
+          <LineSeries
+            className="first-series"
+            data={
+              this.state.isLoaded
+                ? processData(this.state.nhoods)
+                : [{ x: 0, y: 0 }]
+            }
+            style={{
+              strokeLinejoin: "round",
+              strokeWidth: 4,
+            }}
+          />
+        </XYPlot>
+        <Form>
+          <Form.Group widths="equal">
+            <Form.Select
+              fluid
+              label="Data Selection"
+              options={selections}
               name="selection"
               value={this.state.selection}
+              placeholder="Land Value"
               onChange={this.handleChange.bind(this)}
-            >
-              <option value="lv">Land Value</option>
-              <option value="tl">Tax Levy</option>
-              <option value="iv">Improvement Value</option>
-            </select>
-            <select
+            />
+            <Form.Select
+              fluid
+              label="Math"
+              options={maths}
               name="math"
               value={this.state.math}
+              placeholder="Average"
               onChange={this.handleChange.bind(this)}
-            >
-              <option value="avg">Average</option>
-              <option value="median">Median</option>
-              <option value="max">Max</option>
-            </select>
-            <input type="submit" value="Search" />
-          </form>
-        </div>
+            />
+          </Form.Group>
+          <Form.Button onClick={this.handleSubmit.bind(this)}>
+            Search
+          </Form.Button>
+        </Form>
       </div>
     );
   }
