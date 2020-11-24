@@ -16,11 +16,13 @@ async function get(req, res, next) {
 
     context.year_built_after = parseInt(req.query.year_built_after, 10);
 
-    context.year_built_bw_first = parseInt(req.query.year_built_bw_first, 10);
+    context.year_built_first = parseInt(req.query.year_built_first, 10);
 
-    context.year_built_bw_sec = parseInt(req.query.year_built_bw_sec, 10);
+    context.year_built_sec = parseInt(req.query.year_built_sec, 10);
 
     context.z_category = req.query.z_category;
+
+    context.ncode = req.query.ncode;
 
     const rows = await charts.find(context);
 

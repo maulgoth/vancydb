@@ -20,7 +20,6 @@ async function get(req, res, next) {
 
     context.year_built_bw_sec = parseInt(req.query.year_built_bw_sec, 10);
 
-    
     context.z_category = req.query.z_category;
 
     const rows = await neighborhoods.find(context);

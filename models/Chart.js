@@ -20,9 +20,12 @@ async function find(context) {
     if (context.z_category) {
       query += ` JOIN zones z ON p.zid = z.zid
                 WHERE z_category='${context.z_category}'`;
-    } else {
+    } 
+    else
       query += ` WHERE 1 = 1 `;
-    }
+
+    if (context.ncode)
+      query += `\n AND p.ncode = ${context.ncode}`;
 
     const binds = {};
 
@@ -33,11 +36,11 @@ async function find(context) {
     }
 
     // YEAR_BUILT BETWEEN
-    if (context.year_built_bw_first && context.year_built_bw_sec) {
-      binds.year_built_bw_first = context.year_built_bw_first;
-      binds.year_built_bw_sec = context.year_built_bw_sec;
+    if (context.year_built_first && context.year_built_sec) {
+      binds.year_built_first = context.year_built_first;
+      binds.year_built_sec = context.year_built_sec;
       query +=
-        "\n AND year_built BETWEEN :year_built_bw_first AND :year_built_bw_sec";
+        "\n AND year_built BETWEEN :year_built_first AND :year_built_sec";
     }
 
     // YEAR_BUILT BEFORE
