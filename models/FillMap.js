@@ -12,6 +12,11 @@ async function find(context) {
         ORDER BY ncode ASC`;
 
     const result = await database.simpleExecute(query);
+    for (i = 0; i < 22; i++) {
+        let temp = JSON.parse(result.rows[i].geo_poly_outline);
+        result.rows[i].geo_poly_outline = temp;
+    }
+    
     return result.rows;
 }
 

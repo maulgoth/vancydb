@@ -12,7 +12,7 @@ async function find(context) {
 
   for (i = 2006; i < 2021; i++) {
     let query = `SELECT 
-    ROUND(${math}(${selection}_${i}), 0) "${selection}"
+    ROUND(${math}(${selection}_${i}), 0) "dollarval"
     FROM ${choice} x
     JOIN property p ON x.pid = p.pid`;
 
