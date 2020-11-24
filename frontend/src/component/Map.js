@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Select, Button, Checkbox, Form } from "semantic-ui-react";
+import {  Form, Segment } from "semantic-ui-react";
 import {
   TileLayer,
   Marker,
@@ -82,24 +82,24 @@ export default class Map extends Component {
             <h1> Loading </h1>
           )}
         </MapContainer>
+        
+        <Segment>
         <Form>
           <Form.Group widths="equal">
             <Form.Select
               fluid
-              label="Data Selection"
               options={selections}
               name="selection"
               value={this.state.selection}
-              placeholder="Land Value"
+              placeholder="Data Selection"
               onChange={this.handleChange.bind(this)}
             />
             <Form.Select
               fluid
-              label="Math"
               options={maths}
               name="math"
               value={this.state.math}
-              placeholder="Average"
+              placeholder="Statistic"
               onChange={this.handleChange.bind(this)}
             />
           </Form.Group>
@@ -107,6 +107,8 @@ export default class Map extends Component {
             Search
           </Form.Button>
         </Form>
+        </Segment>
+        
       </div>
     );
   }
