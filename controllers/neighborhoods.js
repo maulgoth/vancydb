@@ -22,6 +22,8 @@ async function get(req, res, next) {
 
     context.z_category = req.query.z_category;
 
+    context.year = parseInt(req.query.year);
+
     const rows = await neighborhoods.find(context);
 
     res.status(200).json(rows);
