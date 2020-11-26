@@ -105,7 +105,7 @@ export default class Map extends Component {
               : this.state.z_category,
           year_built_first: this.state.year_built_first,
           year_built_sec: this.state.year_built_sec,
-        }
+        },
       })
       .then((res) => {
         const nhoods = res.data;

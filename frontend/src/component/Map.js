@@ -12,7 +12,7 @@ import axios from "axios";
 import Slider, { Range } from "rc-slider";
 import "rc-slider/assets/index.css";
 
-const style = { margin: 20 };
+const sliderStyle = { margin: 20 };
 const marks = {
   2006: 2006,
   2007: 2007,
@@ -90,14 +90,31 @@ const zones = [
   { key: 9, value: "One Family Dwelling", text: "One Family Dwelling" },
 ];
 
+const getColor = (o) => {
+  return o == 1 ? '#800026' :
+  o == 2 ? '#BD0026' :
+  o == 3 ? '#E31A1C' :
+  o == 4 ? '#FC4E2A' :
+  o == 5 ? '#FD8D3C' :
+  o == 6 ? '#FEB24C' :
+  o == 7 ? '#FED976' :
+  'FFEDA0';
+}
+
+// style = (item) => {
+//   return {
+//     fillColor: getColor(item.)
+//   }
+// }
+
 export default class Map extends Component {
   state = {
     isLoaded: false,
     dataLoaded: false,
     outlines: [],
     nhoods: [],
-    year_built_bw_first: 1900,
-    year_built_bw_sec: 2020,
+    year_built_bw_first: null,
+    year_built_bw_sec: null,
     ncode: 0,
     zcategory: "",
     selection: "lv",
@@ -114,24 +131,7 @@ export default class Map extends Component {
       const outlines = res.data;
       this.setState({ outlines });
       this.setState({ isLoaded: true });
-    });
-    this.setState({ dataLoaded: false });
-    axios.get("http://localhost:5000/api/neighborhoods/", {
-      params: {
-        selection: this.state.selection,
-        math: this.state.math,
-        z_category:
-          this.state.z_category === "All Zone Categories"
-            ? null
-            : this.state.z_category,
-        year_built_first: this.state.year_built_first,
-        year_built_sec: this.state.year_built_sec,
-      }
-    }).then((res) => {
-      const nhoods = res.data;
-      console.log(nhoods);
-      this.setState({ nhoods });
-      this.setState({ dataLoaded: true });
+      console.log(outlines);
     });
   };
 
@@ -162,6 +162,9 @@ export default class Map extends Component {
 
   componentDidMount() {
     this.callApiFillMap();
+  //   setTimeout(() => {
+  //     this.callApiData()
+  // }, 1000);
   }
 
   render() {
@@ -169,8 +172,8 @@ export default class Map extends Component {
       <div>
         <MapContainer
           center={[49.246576, -123.090169]}
-          zoom={11}
-          style={{ width: "100%", height: "400px" }}
+          zoom={12}
+          style={{ width: "100%", height: "460px" }}
         >
           <TileLayer
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -179,7 +182,7 @@ export default class Map extends Component {
           // Check if data fetched
           {this.state.isLoaded ? (
             <GeoJSON
-              data={this.state.outlines.map((x) => x.geo_poly_outline)}
+              data={this.state.outlines}
               style={() => ({
                 weight: 2,
                 color: "#666",
@@ -188,14 +191,14 @@ export default class Map extends Component {
               })}
             />
           ) : (
-            <h1> Loading </h1>
+            <h3> Loading </h3>
           )}
         </MapContainer>
-        {this.state.dataLoaded ? (<h1>{this.state.nhoods[0][this.state.year_selected]}</h1>) 
+        {this.state.dataLoaded ? (<h1>{this.state.nhoods[this.state.year_selected][0].VAL}</h1>) 
         : (<h1>Loading</h1>)}
         <Segment>
           <h3>Year: {this.state.year_selected}</h3>
-          <div style={style}>
+          <div style={sliderStyle}>
             <Slider
               min={2006}
               max={2020}
