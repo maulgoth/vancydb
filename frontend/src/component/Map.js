@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Form, Segment } from "semantic-ui-react";
 import {
   TileLayer,
+  Tooltip,
   Marker,
   Popup,
   MapConsumer,
@@ -91,21 +92,24 @@ const zones = [
 ];
 
 const getColor = (o) => {
-  return o == 1 ? '#800026' :
-  o == 2 ? '#BD0026' :
-  o == 3 ? '#E31A1C' :
-  o == 4 ? '#FC4E2A' :
-  o == 5 ? '#FD8D3C' :
-  o == 6 ? '#FEB24C' :
-  o == 7 ? '#FED976' :
-  'FFEDA0';
-}
-
-// style = (item) => {
-//   return {
-//     fillColor: getColor(item.)
-//   }
-// }
+  return o === 0
+    ? "#666"
+    : o === 1
+    ? "#00429d"
+    : o === 2
+    ? "#325da9"
+    : o === 3
+    ? "#4e78b5"
+    : o === 4
+    ? "#6694c1"
+    : o === 5
+    ? "#80b1cc"
+    : o === 6
+    ? "#9dced6"
+    : o === 7
+    ? "#c0eade"
+    : "#ffffe0";
+};
 
 export default class Map extends Component {
   state = {
@@ -119,11 +123,32 @@ export default class Map extends Component {
     zcategory: "",
     selection: "lv",
     math: "avg",
-    year_selected: 2013,
+    year_selected: 2006,
+    geoKey: "x",
   };
 
+  style(feature) {
+    let ncode = feature.properties.ncode;
+    let x;
+    if (this.state.nhoods[this.state.year_selected][ncode - 1])
+      x = this.state.nhoods[this.state.year_selected][ncode - 1].OCTILE;
+    else x = 0;
+    return {
+      fillColor: getColor(x),
+      weight: 2,
+      color: "#666",
+      dashArray: "",
+      fillOpacity: 0.7,
+    };
+  }
+
   handleChange = (e, { name, value }) => this.setState({ [name]: value });
-  handleChangeSlider = (value) => this.setState({ year_selected: value });
+  handleChangeSlider = (value) => {
+    this.setState({ year_selected: value });
+    if (this.state.geoKey === "x") this.setState({ geoKey: "y" });
+    else this.setState({ geoKey: "x" });
+    console.log(this.state.geoKey);
+  };
 
   callApiFillMap = () => {
     this.setState({ isLoaded: false });
@@ -131,40 +156,54 @@ export default class Map extends Component {
       const outlines = res.data;
       this.setState({ outlines });
       this.setState({ isLoaded: true });
-      console.log(outlines);
     });
   };
 
   callApiData = () => {
+    this.setState({ isLoaded: false });
     this.setState({ dataLoaded: false });
-    axios.get("http://localhost:5000/api/neighborhoods/", {
-      params: {
-        selection: this.state.selection,
-        math: this.state.math,
-        z_category:
-          this.state.z_category === "All Zone Categories"
-            ? null
-            : this.state.z_category,
-        year_built_first: this.state.year_built_first,
-        year_built_sec: this.state.year_built_sec,
-      }
-    }).then((res) => {
-      const nhoods = res.data;
-      console.log(nhoods);
-      this.setState({ nhoods });
-      this.setState({ dataLoaded: true });
+    axios.get("http://localhost:5000/api/fillmap").then((res) => {
+      const outlines = res.data;
+      this.setState({ outlines });
+      this.setState({ isLoaded: true });
+      console.log(outlines);
     });
-  }
+    axios
+      .get("http://localhost:5000/api/neighborhoods/", {
+        params: {
+          selection: this.state.selection,
+          math: this.state.math,
+          z_category:
+            this.state.z_category === "All Zone Categories"
+              ? null
+              : this.state.z_category,
+          year_built_first: this.state.year_built_first,
+          year_built_sec: this.state.year_built_sec,
+        },
+      })
+      .then((res) => {
+        const nhoods = res.data;
+        console.log(nhoods);
+        this.setState({ nhoods });
+        this.setState({ dataLoaded: true });
+      });
+  };
 
   handleSubmit() {
     this.callApiData();
   }
 
   componentDidMount() {
-    this.callApiFillMap();
-  //   setTimeout(() => {
-  //     this.callApiData()
-  // }, 1000);
+    // this.callApiFillMap();
+  }
+
+  onEachFeature(feature, layer) {
+    let ncode = feature.properties.ncode;
+    let x;
+    if (this.state.nhoods[this.state.year_selected][ncode - 1])
+      x = this.state.nhoods[this.state.year_selected][ncode - 1].VAL;
+    else x = 0;
+    layer.bindPopup(String(x));
   }
 
   render() {
@@ -179,23 +218,18 @@ export default class Map extends Component {
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          // Check if data fetched
-          {this.state.isLoaded ? (
+          {/* // Check if data fetched */}
+          {this.state.dataLoaded ? (
             <GeoJSON
               data={this.state.outlines}
-              style={() => ({
-                weight: 2,
-                color: "#666",
-                dashArray: "",
-                fillOpacity: 0.7,
-              })}
+              style={this.style.bind(this)}
+              onEachFeature={this.onEachFeature.bind(this)}
+              key={this.state.geoKey}
             />
           ) : (
             <h3> Loading </h3>
           )}
         </MapContainer>
-        {this.state.dataLoaded ? (<h1>{this.state.nhoods[this.state.year_selected][0].VAL}</h1>) 
-        : (<h1>Loading</h1>)}
         <Segment>
           <h3>Year: {this.state.year_selected}</h3>
           <div style={sliderStyle}>
@@ -229,8 +263,6 @@ export default class Map extends Component {
               placeholder="Statistic"
               onChange={this.handleChange.bind(this)}
             />
-          </Form.Group>
-          <Form.Group widths="equal">
             <Form.Select
               fluid
               label="Zone Category"
@@ -240,8 +272,6 @@ export default class Map extends Component {
               placeholder="Zone Category"
               onChange={this.handleChange.bind(this)}
             />
-          </Form.Group>
-          <Form.Group widths="equal">
             <Form.Input
               label="Year Built After"
               placeholder="Year Built After"
@@ -255,9 +285,11 @@ export default class Map extends Component {
               onChange={this.handleChange.bind(this)}
             />
           </Form.Group>
+          <Form.Group widths="equal"></Form.Group>
+          <Form.Group widths="equal"></Form.Group>
           <Form.Button onClick={this.handleSubmit.bind(this)}>
-              Search
-            </Form.Button>
+            Search
+          </Form.Button>
         </Form>
       </div>
     );
