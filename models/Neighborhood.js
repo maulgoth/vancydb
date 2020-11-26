@@ -36,7 +36,7 @@ async function find(context) {
             query += ` AND ncode = ${j} GROUP BY ncode\n`;
     }
 
-    query += `)\n SELECT val, ncode, NTILE(8) OVER (ORDER BY val ASC) octile FROM averages ORDER BY ncode DESC`;
+    query += `)\n SELECT val, ncode, NTILE(8) OVER (ORDER BY val ASC) octile FROM averages ORDER BY ncode ASC`;
 
     // Hit Database with query and concatenate
     const result = await database.simpleExecute(query, binds);
