@@ -1,3 +1,4 @@
+// const { parse } = require('dotenv/types');
 const neighborhoods = require('../models/Neighborhood');
 
 async function get(req, res, next) {
@@ -22,7 +23,9 @@ async function get(req, res, next) {
 
     context.z_category = req.query.z_category;
 
-    context.year = parseInt(req.query.year);
+    context.price_min = parseInt(req.query.price_min, 10);
+
+    context.price_max = parseInt(req.query.price_max, 10);
 
     const rows = await neighborhoods.find(context);
 

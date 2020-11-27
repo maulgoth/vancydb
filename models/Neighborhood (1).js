@@ -30,10 +30,6 @@ async function find(context) {
             query +=
             `\n AND year_built BETWEEN :year_built_bw_first AND :year_built_bw_sec\n`;
         }
-
-        // IF PRICE MIN AND PRICE MAX
-
-
         if (j < 22)
             query += ` AND ncode = ${j} GROUP BY ncode UNION ALL\n`;
         else
