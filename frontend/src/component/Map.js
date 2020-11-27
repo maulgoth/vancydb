@@ -93,22 +93,15 @@ const zones = [
 
 const getColor = (o) => {
   return o === 0
-    ? "#666"
-    : o === 1
-    ? "#00429d"
-    : o === 2
-    ? "#325da9"
-    : o === 3
-    ? "#4e78b5"
-    : o === 4
-    ? "#6694c1"
-    : o === 5
-    ? "#80b1cc"
-    : o === 6
-    ? "#9dced6"
-    : o === 7
-    ? "#c0eade"
-    : "#ffffe0";
+    ? "#666666"
+    : o === 1 ? "#ffffcc"
+    : o === 2 ? "#ffeda0"
+    : o === 3 ? "#fed976"
+    : o === 4 ? "#feb24c"
+    : o === 5 ? "#fd8d3c"
+    : o === 6 ? "#fc4e2a"
+    : o === 7 ? "#e31a1c"
+    : "#b10026"
 };
 
 export default class Map extends Component {
@@ -124,7 +117,9 @@ export default class Map extends Component {
     selection: "lv",
     math: "avg",
     year_selected: 2006,
-    geoKey: "x",
+    geoKey: "x", // This key change is necessary to refresh the GeoJSON, don't ask
+    price_min: 0,
+    price_max: 5000000000
   };
 
   style(feature) {
@@ -217,6 +212,7 @@ export default class Map extends Component {
           <TileLayer
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            // opacity = {0.1}
           />
           {/* // Check if data fetched */}
           {this.state.dataLoaded ? (
@@ -285,8 +281,20 @@ export default class Map extends Component {
               onChange={this.handleChange.bind(this)}
             />
           </Form.Group>
-          <Form.Group widths="equal"></Form.Group>
-          <Form.Group widths="equal"></Form.Group>
+          <Form.Group widths="equal">
+            <Form.Input
+              label="Minimum Price"
+              placeholder="Minimum Price"
+              name="price_min"
+              onChange={this.handleChange.bind(this)}
+            />
+            <Form.Input
+              label="Maximum Price"
+              placeholder="Maximum Price"
+              name="price_max"
+              onChange={this.handleChange.bind(this)}
+            />
+          </Form.Group>
           <Form.Button onClick={this.handleSubmit.bind(this)}>
             Search
           </Form.Button>
