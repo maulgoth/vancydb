@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Form, Segment } from "semantic-ui-react";
-import { TileLayer, MapContainer, GeoJSON } from "react-leaflet";
+import { TileLayer, Map, GeoJSON } from "react-leaflet";
+// import Control from 'react-leaflet-control';
 import axios from "axios";
 import Slider, { Range } from "rc-slider";
 import "rc-slider/assets/index.css";
@@ -103,9 +104,9 @@ const getColor = (o) => {
     : "#b10026";
 };
 
-export default class Map extends Component {
+export default class MapPage extends Component {
   state = {
-    submitLoaded: true,
+    formLoading: false,
     dataLoaded: false,
     outlines: [],
     nhoods: [],
@@ -152,8 +153,7 @@ export default class Map extends Component {
   };
 
   callApiData = () => {
-    this.setState({ dataLoaded: false });
-    this.setState({ submitLoaded: false });
+    this.setState({ dataLoaded: false, formLoading: true });
     this.callApiFillMap();
     axios
       .get("http://localhost:5000/api/neighborhoods/", {
@@ -171,11 +171,31 @@ export default class Map extends Component {
       .then((res) => {
         const nhoods = res.data;
         console.log(nhoods);
-        this.setState({ nhoods });
-        this.setState({ dataLoaded: true });
-        this.setState({ submitLoaded: true });
+        this.setState({ nhoods, dataLoaded: true, formLoading: false });
       });
   };
+
+  createLeafletElement() {
+    var legend = L.control({ position: "bottomright" });
+
+    legend.onAdd = function (map) {
+      var div = L.DomUtil.create("div", "info legend"),
+        grades = [0, 10, 20, 50, 100, 200, 500, 1000],
+        labels = [];
+
+      // loop through our density intervals and generate a label with a colored square for each interval
+      for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+          '<i style="background:' +
+          getColor(grades[i] + 1) +
+          '"></i> ' +
+          grades[i] +
+          (grades[i + 1] ? "&ndash;" + grades[i + 1] + "<br>" : "+");
+      }
+
+      return div;
+    };
+  }
 
   handleSubmit() {
     this.callApiData();
@@ -201,7 +221,7 @@ export default class Map extends Component {
   render() {
     return (
       <div>
-        <MapContainer
+        <Map
           center={[49.246576, -123.090169]}
           zoom={12}
           style={{ width: "100%", height: "460px" }}
@@ -210,6 +230,7 @@ export default class Map extends Component {
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
+
           {/* // Check if data fetched */}
           {this.state.dataLoaded ? (
             <GeoJSON
@@ -221,8 +242,7 @@ export default class Map extends Component {
           ) : (
             <h3> Loading </h3>
           )}
-        </MapContainer>
-
+        </Map>
         <Segment>
           <h3>Year: {this.state.year_selected}</h3>
           <div style={sliderStyle}>
@@ -236,7 +256,7 @@ export default class Map extends Component {
             />
           </div>
         </Segment>
-        <Form >
+        <Form loading={this.state.formLoading}>
           <Form.Group widths="equal">
             <Form.Select
               fluid
@@ -295,7 +315,6 @@ export default class Map extends Component {
           <Form.Button onClick={this.handleSubmit.bind(this)}>
             Search
           </Form.Button>
-          <h1>{this.state.submitLoaded ? "True" : "False"}</h1>
         </Form>
       </div>
     );

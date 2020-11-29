@@ -1,7 +1,7 @@
 import "./App.css";
 import NavBar from "./component/NavBar";
 import Chart from "./component/Chart";
-import Map from "./component/Map";
+import MapPage from "./component/MapPage";
 import SearchBar from "./component/SearchBar";
 
 import { Grid, GridRow, Segment } from "semantic-ui-react";
@@ -21,7 +21,7 @@ function App() {
           </Route>
           <Route path="/map">
             <Segment>
-              <Map />
+              <MapPage />
             </Segment>
           </Route>
         </Switch>
