@@ -13,7 +13,7 @@ async function find(context) {
   else if (selection == "tl") choice = "tax_levy";
   const binds = {};
 
-  for (year = 2006; year < 2007; year++) {
+  for (year = 2006; year < 2011; year++) {
     query = "";
     query += `WITH averages AS ( \n`;
     for (j = 1; j < 23; j++) {
@@ -40,13 +40,15 @@ async function find(context) {
       else query += ` AND ncode = ${j} GROUP BY ncode\n`;
     }
 
-    query += `)\n SELECT val, ncode, NTILE(8) OVER (ORDER BY val ASC) octile FROM averages ORDER BY ncode ASC`;
+    query += `)\n SELECT val, ncode, NTILE(8) OVER (ORDER BY val ASC) AS octile FROM averages ORDER BY ncode ASC`;
 
     // Hit Database with query and concatenate
     const result = await database.simpleExecute(query, binds);
     // return result;
     final[year] = result.rows;
   }
+
+  final[final.length - 1] = "EXAMPLE";
 
   return final;
 }
