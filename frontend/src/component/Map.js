@@ -1,14 +1,6 @@
 import React, { Component } from "react";
 import { Form, Segment } from "semantic-ui-react";
-import {
-  TileLayer,
-  Tooltip,
-  Marker,
-  Popup,
-  MapConsumer,
-  MapContainer,
-  GeoJSON,
-} from "react-leaflet";
+import { TileLayer, MapContainer, GeoJSON } from "react-leaflet";
 import axios from "axios";
 import Slider, { Range } from "rc-slider";
 import "rc-slider/assets/index.css";
@@ -94,19 +86,26 @@ const zones = [
 const getColor = (o) => {
   return o === 0
     ? "#666666"
-    : o === 1 ? "#ffffcc"
-    : o === 2 ? "#ffeda0"
-    : o === 3 ? "#fed976"
-    : o === 4 ? "#feb24c"
-    : o === 5 ? "#fd8d3c"
-    : o === 6 ? "#fc4e2a"
-    : o === 7 ? "#e31a1c"
-    : "#b10026"
+    : o === 1
+    ? "#ffffcc"
+    : o === 2
+    ? "#ffeda0"
+    : o === 3
+    ? "#fed976"
+    : o === 4
+    ? "#feb24c"
+    : o === 5
+    ? "#fd8d3c"
+    : o === 6
+    ? "#fc4e2a"
+    : o === 7
+    ? "#e31a1c"
+    : "#b10026";
 };
 
 export default class Map extends Component {
   state = {
-    isLoaded: false,
+    submitLoaded: true,
     dataLoaded: false,
     outlines: [],
     nhoods: [],
@@ -119,7 +118,7 @@ export default class Map extends Component {
     year_selected: 2006,
     geoKey: "x", // This key change is necessary to refresh the GeoJSON, don't ask
     price_min: 0,
-    price_max: 5000000000
+    price_max: 5000000000,
   };
 
   style(feature) {
@@ -146,23 +145,16 @@ export default class Map extends Component {
   };
 
   callApiFillMap = () => {
-    this.setState({ isLoaded: false });
     axios.get("http://localhost:5000/api/fillmap").then((res) => {
       const outlines = res.data;
       this.setState({ outlines });
-      this.setState({ isLoaded: true });
     });
   };
 
   callApiData = () => {
-    this.setState({ isLoaded: false });
     this.setState({ dataLoaded: false });
-    axios.get("http://localhost:5000/api/fillmap").then((res) => {
-      const outlines = res.data;
-      this.setState({ outlines });
-      this.setState({ isLoaded: true });
-      console.log(outlines);
-    });
+    this.setState({ submitLoaded: false });
+    this.callApiFillMap();
     axios
       .get("http://localhost:5000/api/neighborhoods/", {
         params: {
@@ -181,6 +173,7 @@ export default class Map extends Component {
         console.log(nhoods);
         this.setState({ nhoods });
         this.setState({ dataLoaded: true });
+        this.setState({ submitLoaded: true });
       });
   };
 
@@ -194,11 +187,15 @@ export default class Map extends Component {
 
   onEachFeature(feature, layer) {
     let ncode = feature.properties.ncode;
-    let x;
+    let val;
     if (this.state.nhoods[this.state.year_selected][ncode - 1])
-      x = this.state.nhoods[this.state.year_selected][ncode - 1].VAL;
-    else x = 0;
-    layer.bindPopup(String(x));
+      val =
+        "$" +
+        this.state.nhoods[this.state.year_selected][
+          ncode - 1
+        ].VAL.toLocaleString();
+    else val = "$" + String(0);
+    layer.bindPopup(val);
   }
 
   render() {
@@ -212,7 +209,6 @@ export default class Map extends Component {
           <TileLayer
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            // opacity = {0.1}
           />
           {/* // Check if data fetched */}
           {this.state.dataLoaded ? (
@@ -226,6 +222,7 @@ export default class Map extends Component {
             <h3> Loading </h3>
           )}
         </MapContainer>
+
         <Segment>
           <h3>Year: {this.state.year_selected}</h3>
           <div style={sliderStyle}>
@@ -239,7 +236,7 @@ export default class Map extends Component {
             />
           </div>
         </Segment>
-        <Form>
+        <Form >
           <Form.Group widths="equal">
             <Form.Select
               fluid
@@ -298,6 +295,7 @@ export default class Map extends Component {
           <Form.Button onClick={this.handleSubmit.bind(this)}>
             Search
           </Form.Button>
+          <h1>{this.state.submitLoaded ? "True" : "False"}</h1>
         </Form>
       </div>
     );
