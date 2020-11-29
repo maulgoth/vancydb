@@ -34,6 +34,13 @@ async function find(context) {
         "\n AND year_built BETWEEN :year_built_first AND :year_built_sec";
     }
 
+    // IF PRICE MIN AND PRICE MAX
+    if (context.price_min && context.price_max) {
+      binds.price_min = context.price_min;
+      binds.price_max = context.price_max;
+      query += `\n AND ${selection}_${year} BETWEEN :price_min AND price_max`;
+    }
+
     const result = await database.simpleExecute(query, binds);
     result.rows["0"].year = i;
     final = final.concat(result.rows);

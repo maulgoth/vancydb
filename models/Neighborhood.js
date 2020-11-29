@@ -13,31 +13,31 @@ async function find(context) {
   else if (selection == "tl") choice = "tax_levy";
   const binds = {};
 
-  for (year = 2006; year < 2021; year++) {
-    query = '';
+  for (year = 2006; year < 2007; year++) {
+    query = "";
     query += `WITH averages AS ( \n`;
-    for (j=1; j < 23; j++) {
-        query += `SELECT ROUND(${math}(${selection}_${year}), 0) val, ncode FROM ${choice} i JOIN property p ON i.pid = p.pid`;
-        // CHOOSE ZONE CATEGORY
-        if (context.z_category)
-            query += ` JOIN zones z ON p.zid = z.zid WHERE z_category='${context.z_category}' `;
-        else
-            query += ` WHERE 1 = 1 \n`;
-        // YEAR_BUILT BETWEEN
-        if (context.year_built_bw_first && context.year_built_bw_sec) {
-            binds.year_built_bw_first = context.year_built_bw_first;
-            binds.year_built_bw_sec = context.year_built_bw_sec;
-            query +=
-            `\n AND year_built BETWEEN :year_built_bw_first AND :year_built_bw_sec\n`;
-        }
+    for (j = 1; j < 23; j++) {
+      query += `SELECT ROUND(${math}(${selection}_${year}), 0) val, ncode FROM ${choice} i JOIN property p ON i.pid = p.pid`;
+      // CHOOSE ZONE CATEGORY
+      if (context.z_category)
+        query += ` JOIN zones z ON p.zid = z.zid WHERE z_category='${context.z_category}' `;
+      else query += ` WHERE 1 = 1 \n`;
+      // YEAR_BUILT BETWEEN
+      if (context.year_built_bw_first && context.year_built_bw_sec) {
+        binds.year_built_bw_first = context.year_built_bw_first;
+        binds.year_built_bw_sec = context.year_built_bw_sec;
+        query += `\n AND year_built BETWEEN :year_built_bw_first AND :year_built_bw_sec\n`;
+      }
 
-        // IF PRICE MIN AND PRICE MAX
+      // IF PRICE MIN AND PRICE MAX
+      if (context.price_min && context.price_max) {
+        binds.price_min = context.price_min;
+        binds.price_max = context.price_max;
+        query += `\n AND ${selection}_${year} BETWEEN :price_min AND price_max`;
+      }
 
-
-        if (j < 22)
-            query += ` AND ncode = ${j} GROUP BY ncode UNION ALL\n`;
-        else
-            query += ` AND ncode = ${j} GROUP BY ncode\n`;
+      if (j < 22) query += ` AND ncode = ${j} GROUP BY ncode UNION ALL\n`;
+      else query += ` AND ncode = ${j} GROUP BY ncode\n`;
     }
 
     query += `)\n SELECT val, ncode, NTILE(8) OVER (ORDER BY val ASC) octile FROM averages ORDER BY ncode ASC`;
