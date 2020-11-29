@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Form, Segment } from "semantic-ui-react";
 import { TileLayer, Map, GeoJSON } from "react-leaflet";
-// import Control from 'react-leaflet-control';
+import Control from "react-leaflet-control";
+import Legend from "./Legend";
 import axios from "axios";
 import Slider, { Range } from "rc-slider";
 import "rc-slider/assets/index.css";
@@ -39,28 +40,28 @@ const maths = [
 
 const neighborhoods = [
   { key: 0, value: 0, text: "All Neighborhoods" },
-  { key: 1, value: 1, text: "1 - Dunbar-Southlands" },
-  { key: 2, value: 2, text: "2 - Kerrisdale" },
-  { key: 3, value: 3, text: "3 - Killarney" },
-  { key: 4, value: 4, text: "4 - Kitsilano" },
-  { key: 5, value: 5, text: "5 - South Cambie" },
-  { key: 6, value: 6, text: "6 - Victoria-Fraserview" },
-  { key: 7, value: 7, text: "7 - Kensington-Cedar Cottage" },
-  { key: 8, value: 8, text: "8 - Mount Pleasant" },
-  { key: 9, value: 9, text: "9 - Oakridge" },
-  { key: 10, value: 10, text: "10 -	Renfrew-Collingwood" },
-  { key: 11, value: 11, text: "11 -	Sunset" },
-  { key: 12, value: 12, text: "12 -	West Point Grey" },
-  { key: 13, value: 13, text: "13 -	Arbutus-Ridge" },
-  { key: 14, value: 14, text: "14 -	Downtown" },
-  { key: 15, value: 15, text: "15 -	Fairview" },
-  { key: 16, value: 16, text: "16 -	Grandview-Woodland" },
-  { key: 17, value: 17, text: "17 -	Hastings-Sunrise" },
-  { key: 18, value: 18, text: "18 -	Marpole" },
-  { key: 19, value: 19, text: "19 -	Riley Park" },
-  { key: 20, value: 20, text: "20 -	Shaughnessy" },
-  { key: 21, value: 21, text: "21 -	Strathcona" },
-  { key: 22, value: 22, text: "22 -	West End " },
+  { key: 1, value: 1, text: "Dunbar-Southlands" },
+  { key: 2, value: 2, text: "Kerrisdale" },
+  { key: 3, value: 3, text: "Killarney" },
+  { key: 4, value: 4, text: "Kitsilano" },
+  { key: 5, value: 5, text: "South Cambie" },
+  { key: 6, value: 6, text: "Victoria-Fraserview" },
+  { key: 7, value: 7, text: "Kensington-Cedar Cottage" },
+  { key: 8, value: 8, text: "Mount Pleasant" },
+  { key: 9, value: 9, text: "Oakridge" },
+  { key: 10, value: 10, text: "Renfrew-Collingwood" },
+  { key: 11, value: 11, text: "Sunset" },
+  { key: 12, value: 12, text: "West Point Grey" },
+  { key: 13, value: 13, text: "Arbutus-Ridge" },
+  { key: 14, value: 14, text: "Downtown" },
+  { key: 15, value: 15, text: "Fairview" },
+  { key: 16, value: 16, text: "Grandview-Woodland" },
+  { key: 17, value: 17, text: "Hastings-Sunrise" },
+  { key: 18, value: 18, text: "Marpole" },
+  { key: 19, value: 19, text: "Riley Park" },
+  { key: 20, value: 20, text: "Shaughnessy" },
+  { key: 21, value: 21, text: "Strathcona" },
+  { key: 22, value: 22, text: "West End " },
 ];
 
 const zones = [
@@ -175,28 +176,6 @@ export default class MapPage extends Component {
       });
   };
 
-  createLeafletElement() {
-    var legend = L.control({ position: "bottomright" });
-
-    legend.onAdd = function (map) {
-      var div = L.DomUtil.create("div", "info legend"),
-        grades = [0, 10, 20, 50, 100, 200, 500, 1000],
-        labels = [];
-
-      // loop through our density intervals and generate a label with a colored square for each interval
-      for (var i = 0; i < grades.length; i++) {
-        div.innerHTML +=
-          '<i style="background:' +
-          getColor(grades[i] + 1) +
-          '"></i> ' +
-          grades[i] +
-          (grades[i + 1] ? "&ndash;" + grades[i + 1] + "<br>" : "+");
-      }
-
-      return div;
-    };
-  }
-
   handleSubmit() {
     this.callApiData();
   }
@@ -215,7 +194,7 @@ export default class MapPage extends Component {
           ncode - 1
         ].VAL.toLocaleString();
     else val = "$" + String(0);
-    layer.bindPopup(val);
+    layer.bindPopup(neighborhoods[ncode].text + ": " + val);
   }
 
   render() {
@@ -230,7 +209,7 @@ export default class MapPage extends Component {
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-
+          <Legend />
           {/* // Check if data fetched */}
           {this.state.dataLoaded ? (
             <GeoJSON
