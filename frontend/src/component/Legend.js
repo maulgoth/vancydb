@@ -30,7 +30,16 @@ class Legend extends MapControl {
 
     legend.onAdd = () => {
       const div = L.DomUtil.create("div", "info legend");
-      const grades = [0, 1, 2, 3, 4, 5, 6, 7];
+      const grades = [
+        this.props.nhoods[this.props.year_selected][0].VAL, 
+      this.props.nhoods[this.props.year_selected][1].VAL,
+      this.props.nhoods[this.props.year_selected][2].VAL,
+      this.props.nhoods[this.props.year_selected][3].VAL,
+      this.props.nhoods[this.props.year_selected][4].VAL,
+      this.props.nhoods[this.props.year_selected][5].VAL,
+      this.props.nhoods[this.props.year_selected][6].VAL,
+      this.props.nhoods[this.props.year_selected][7].VAL
+    ];
       let labels = [];
       let from;
       let to;

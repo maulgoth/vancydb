@@ -89,20 +89,20 @@ const getColor = (o) => {
   return o === 0
     ? "#666666"
     : o === 1
-    ? "#ffffcc"
-    : o === 2
-    ? "#ffeda0"
-    : o === 3
-    ? "#fed976"
-    : o === 4
-    ? "#feb24c"
-    : o === 5
-    ? "#fd8d3c"
-    : o === 6
-    ? "#fc4e2a"
-    : o === 7
-    ? "#e31a1c"
-    : "#b10026";
+      ? "#ffffcc"
+      : o === 2
+        ? "#ffeda0"
+        : o === 3
+          ? "#fed976"
+          : o === 4
+            ? "#feb24c"
+            : o === 5
+              ? "#fd8d3c"
+              : o === 6
+                ? "#fc4e2a"
+                : o === 7
+                  ? "#e31a1c"
+                  : "#b10026";
 };
 
 export default class MapPage extends Component {
@@ -120,13 +120,15 @@ export default class MapPage extends Component {
     year_selected: 2006,
     geoKey: "x", // This key change is necessary to refresh the GeoJSON, don't ask
     price_min: 0,
-    price_max: 5000000000,
+    price_max: 987654321,
   };
 
   style(feature) {
     let ncode = feature.properties.ncode;
     let x;
-    if (this.state.nhoods[this.state.year_selected][ncode - 1])
+    if (this.state.nhoods[this.state.year_selected][ncode - 1] && this.state.nhoods[this.state.year_selected][ncode - 1].VAL == null)
+      x = 0;
+    else if (this.state.nhoods[this.state.year_selected][ncode - 1])
       x = this.state.nhoods[this.state.year_selected][ncode - 1].OCTILE;
     else x = 0;
     return {
@@ -167,6 +169,9 @@ export default class MapPage extends Component {
               : this.state.z_category,
           year_built_first: this.state.year_built_first,
           year_built_sec: this.state.year_built_sec,
+          price_max: this.state.price_max,
+          price_min: this.state.price_min
+
         },
       })
       .then((res) => {
@@ -187,14 +192,16 @@ export default class MapPage extends Component {
   onEachFeature(feature, layer) {
     let ncode = feature.properties.ncode;
     let val;
-    if (this.state.nhoods[this.state.year_selected][ncode - 1])
-      val =
-        "$" +
-        this.state.nhoods[this.state.year_selected][
-          ncode - 1
-        ].VAL.toLocaleString();
-    else val = "$" + String(0);
+    if (this.state.nhoods[this.state.year_selected][ncode - 1]) {
+      if (this.state.nhoods[this.state.year_selected][ncode - 1].VAL)
+        val = "$" + this.state.nhoods[this.state.year_selected][ncode - 1].VAL.toLocaleString();
+      else
+        val = "$" + String(0);
+    }
+    else
+      val = "$" + String(0);
     layer.bindPopup(neighborhoods[ncode].text + ": " + val);
+    console.log(neighborhoods[ncode].text + ": " + val);
   }
 
   render() {
@@ -209,18 +216,22 @@ export default class MapPage extends Component {
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          <Legend />
           {/* // Check if data fetched */}
           {this.state.dataLoaded ? (
-            <GeoJSON
-              data={this.state.outlines}
-              style={this.style.bind(this)}
-              onEachFeature={this.onEachFeature.bind(this)}
-              key={this.state.geoKey}
-            />
+            <div>
+              <GeoJSON
+                data={this.state.outlines}
+                style={this.style.bind(this)}
+                onEachFeature={this.onEachFeature.bind(this)}
+                key={this.state.geoKey}
+              />
+              {/* <Legend nhoods={this.state.nhoods} year_selected={this.state.year_selected} /> */}
+            </div>
+
+
           ) : (
-            <h3> Loading </h3>
-          )}
+              <h3> Loading </h3>
+            )}
         </Map>
         <Segment>
           <h3>Year: {this.state.year_selected}</h3>

@@ -33,7 +33,7 @@ async function find(context) {
       if (context.price_min && context.price_max) {
         binds.price_min = context.price_min;
         binds.price_max = context.price_max;
-        query += `\n AND ${selection}_${year} BETWEEN :price_min AND price_max`;
+        query += `\n AND ${selection}_${year} BETWEEN :price_min AND :price_max`;
       }
 
       if (j < 22) query += ` AND ncode = ${j} GROUP BY ncode UNION ALL\n`;
@@ -48,7 +48,7 @@ async function find(context) {
     final[year] = result.rows;
   }
 
-  final[final.length - 1] = "EXAMPLE";
+  final[2021] = "EXAMPLE";
 
   return final;
 }
