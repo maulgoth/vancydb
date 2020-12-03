@@ -3,9 +3,15 @@ import React, { Component } from "react";
 export default class Legend extends Component {
   render() {
     return (
-      <div class={'legend'}>
+      <div className={'legend'}>
         <i style={{ background: '#b10026' }}></i>
-        $ {this.props.nhoods[this.props.year_selected] ? String(this.props.nhoods[this.props.year_selected][1].VAL) : "nope"}
+        $ {this.props.nhoods[this.props.year_selected] ? 
+        String(this.props.nhoods['limits'][this.props.year_selected][7]) 
+        : ""}
+        <i style={{ background: '#b10026' }}></i>
+        $ {this.props.nhoods[this.props.year_selected] ? 
+        String(this.props.nhoods['limits'][this.props.year_selected][7]) 
+        : ""}
       </div>
     )
   }

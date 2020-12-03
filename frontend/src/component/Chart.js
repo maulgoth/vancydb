@@ -24,9 +24,9 @@ const maths = [
 ];
 
 const displays = [
+  { key: 'both', text: 'All Zones and Neighborhoods', value: 'both'},
   { key: 'zone', text: 'Zone', value: 'zone' },
-  { key: 'nhood', text: 'Neighborhood', value: 'nhood' },
-  { key: 'both', text: 'All Zones and Neighborhoods', value: 'both'}
+  { key: 'nhood', text: 'Neighborhood', value: 'nhood' }
 ];
 
 const neighborhoods = [
@@ -224,11 +224,11 @@ export default class Map extends Component {
 
          
           </Form.Group>
-          <Form.Group>
+          {/* <Form.Group>
           <h3>{this.state.ncode}</h3>
           <h3>{String(this.state.z_category)}</h3>
           <h3>{String(this.state.display)}</h3>
-          </Form.Group>
+          </Form.Group> */}
           <Form.Group widths="equal">
             <Form.Input
               label="Year Built After"

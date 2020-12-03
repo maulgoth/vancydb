@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Form, Segment } from "semantic-ui-react";
 import { TileLayer, Map, GeoJSON } from "react-leaflet";
-// import Control from "react-leaflet-control";
 import Legend from "./Legend";
 import axios from "axios";
 import Slider, { Range } from "rc-slider";
@@ -205,7 +204,6 @@ export default class MapPage extends Component {
     else
       val = "$" + String(0);
     layer.bindPopup(neighborhoods[ncode].text + ": " + val);
-    // console.log(neighborhoods[ncode].text + ": " + val);
   }
 
   render() {

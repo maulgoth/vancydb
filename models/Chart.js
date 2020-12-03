@@ -10,7 +10,7 @@ async function find(context) {
   else if (selection === "lv") choice = "land_value";
   else if (selection == "tl") choice = "tax_levy";
 
-  for (i = 2006; i < 2021; i++) {
+  for (i = 2006; i < 2020; i++) {
     let query = `SELECT 
     ROUND(${math}(${selection}_${i}), 0) "dollarval"
     FROM ${choice} x
