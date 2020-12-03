@@ -68,7 +68,7 @@ async function find(context) {
     // Final SELECT of query
     query += `SELECT val, ncode, octile, oct_min FROM octolimits, results WHERE oct2 = octile`
 
-    console.log(query);
+    // console.log(query);
 
     // Hit Database with query and concatenate
     const result = await database.simpleExecute(query, binds);
@@ -89,7 +89,7 @@ async function find(context) {
     }
 
     final[year] = temp;
-    console.log(limits);
+    // console.log(limits);
     
     final['limits'][year] = limits;
   }

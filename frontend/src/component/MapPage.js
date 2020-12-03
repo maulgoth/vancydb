@@ -227,6 +227,10 @@ export default class MapPage extends Component {
                 onEachFeature={this.onEachFeature.bind(this)}
                 key={this.state.geoKey}
               />
+              {/* <Legend 
+              nhoods={this.state.nhoods} 
+              year_selected={this.state.year_selected} 
+              /> */}
             </div>
 
 
@@ -234,9 +238,7 @@ export default class MapPage extends Component {
               <h3> Loading </h3>
             )}
         </Map>
-        <Segment>
-          <Legend nhoods={this.state.nhoods} year_selected={this.state.year_selected} />
-        </Segment>
+
         <Segment>
           <h4>Year: {this.state.year_selected}</h4>
           <div style={sliderStyle}>
@@ -308,10 +310,10 @@ export default class MapPage extends Component {
             />
           </Form.Group>
           <Form.Group widths="equal">
-            <Form.Checkbox 
-            label='Contains Transit Stations'
-            name="transit"
-            onChange={this.handleToggle.bind(this)} 
+            <Form.Checkbox
+              label='Contains Transit Stations'
+              name="transit"
+              onChange={this.handleToggle.bind(this)}
             />
           </Form.Group>
           <Form.Button onClick={this.handleSubmit.bind(this)}>
