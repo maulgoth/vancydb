@@ -16,13 +16,17 @@ async function find(context) {
     FROM ${choice} x
     JOIN property p ON x.pid = p.pid`;
 
-    // CHOOSE ZONE CATEGORY
-    if (context.z_category) {
-      query += ` JOIN zones z ON p.zid = z.zid
-                WHERE z_category='${context.z_category}'`;
-    } else query += ` WHERE 1 = 1 `;
-
-    if (context.ncode) query += `\n AND p.ncode = ${context.ncode}`;
+    // ALL ZONES ALL NEIGHBORHOODS
+    if (context.z_category === "all" && context.ncode == 0) {
+      // query += ` JOIN zones z ON p.zid = z.zid
+      //           WHERE z_category='${context.z_category}'`;
+    } //else query += ` WHERE 1 = 1 `;
+    else if (context.z_category == "all")
+      query += `\n WHERE p.ncode = ${context.ncode}`;
+    else if (context.ncode == 0) {
+      query += `\nJOIN zones z ON p.zid = z.zid
+        WHERE z_category='${context.z_category}'`;
+    }
 
     const binds = {};
 

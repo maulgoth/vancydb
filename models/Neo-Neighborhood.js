@@ -17,11 +17,8 @@ async function find(context) {
     query = "";
     query += `WITH averages AS ( \n`;
     for (j = 1; j < 23; j++) {
-      query += `SELECT ROUND(${math}(${selection}_${year}), 0) val, p.ncode FROM ${choice} i JOIN property p ON i.pid = p.pid`;
+      query += `SELECT ROUND(${math}(${selection}_${year}), 0) val, ncode FROM ${choice} i JOIN property p ON i.pid = p.pid`;
       // CHOOSE ZONE CATEGORY
-      console.log(context.transit)
-      if (context.transit == true)
-        query += ` JOIN transit t ON t.ncode = p.ncode `;
       if (context.z_category)
         query += ` JOIN zones z ON p.zid = z.zid WHERE z_category='${context.z_category}' `;
       else query += ` WHERE 1 = 1 \n`;
@@ -39,8 +36,8 @@ async function find(context) {
         query += `\n AND ${selection}_${year} BETWEEN :price_min AND :price_max`;
       }
 
-      if (j < 22) query += ` AND p.ncode = ${j} GROUP BY ncode UNION ALL\n`;
-      else query += ` AND p.ncode = ${j} GROUP BY ncode\n`;
+      if (j < 22) query += ` AND ncode = ${j} GROUP BY ncode UNION ALL\n`;
+      else query += ` AND ncode = ${j} GROUP BY ncode\n`;
     }
 
     query += `)\n SELECT val, ncode, NTILE(8) OVER (ORDER BY val ASC) AS octile FROM averages ORDER BY ncode ASC`;

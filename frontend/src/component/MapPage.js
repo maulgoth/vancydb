@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Form, Segment } from "semantic-ui-react";
 import { TileLayer, Map, GeoJSON } from "react-leaflet";
-import Control from "react-leaflet-control";
+// import Control from "react-leaflet-control";
 import Legend from "./Legend";
 import axios from "axios";
 import Slider, { Range } from "rc-slider";
@@ -23,7 +23,6 @@ const marks = {
   2017: 2017,
   2018: 2018,
   2019: 2019,
-  2020: 2020,
 };
 
 const selections = [
@@ -65,7 +64,7 @@ const neighborhoods = [
 ];
 
 const zones = [
-  { key: 0, value: "All Zone Categories", text: "All Zone Categories" },
+  { key: 0, value: "all", text: "All Zone Categories" },
   {
     key: 1,
     value: "Comprehensive Development",
@@ -114,25 +113,26 @@ export default class MapPage extends Component {
     year_built_bw_first: null,
     year_built_bw_sec: null,
     ncode: 0,
-    zcategory: "",
+    z_category: "",
     selection: "lv",
     math: "avg",
     year_selected: 2006,
     geoKey: "x", // This key change is necessary to refresh the GeoJSON, don't ask
     price_min: 0,
     price_max: 987654321,
+    transit: false
   };
 
   style(feature) {
     let ncode = feature.properties.ncode;
-    let x;
+    let val;
     if (this.state.nhoods[this.state.year_selected][ncode - 1] && this.state.nhoods[this.state.year_selected][ncode - 1].VAL == null)
-      x = 0;
+      val = 0;
     else if (this.state.nhoods[this.state.year_selected][ncode - 1])
-      x = this.state.nhoods[this.state.year_selected][ncode - 1].OCTILE;
-    else x = 0;
+      val = this.state.nhoods[this.state.year_selected][ncode - 1].OCTILE;
+    else val = 0;
     return {
-      fillColor: getColor(x),
+      fillColor: getColor(val),
       weight: 2,
       color: "#666",
       dashArray: "",
@@ -141,6 +141,9 @@ export default class MapPage extends Component {
   }
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value });
+
+  handleToggle = () => this.setState((prevState) => ({ transit: !prevState.transit }))
+
   handleChangeSlider = (value) => {
     this.setState({ year_selected: value });
     if (this.state.geoKey === "x") this.setState({ geoKey: "y" });
@@ -164,13 +167,14 @@ export default class MapPage extends Component {
           selection: this.state.selection,
           math: this.state.math,
           z_category:
-            this.state.z_category === "All Zone Categories"
+            this.state.z_category === "all"
               ? null
               : this.state.z_category,
           year_built_first: this.state.year_built_first,
           year_built_sec: this.state.year_built_sec,
           price_max: this.state.price_max,
-          price_min: this.state.price_min
+          price_min: this.state.price_min,
+          transit: this.state.transit
 
         },
       })
@@ -201,7 +205,7 @@ export default class MapPage extends Component {
     else
       val = "$" + String(0);
     layer.bindPopup(neighborhoods[ncode].text + ": " + val);
-    console.log(neighborhoods[ncode].text + ": " + val);
+    // console.log(neighborhoods[ncode].text + ": " + val);
   }
 
   render() {
@@ -225,7 +229,6 @@ export default class MapPage extends Component {
                 onEachFeature={this.onEachFeature.bind(this)}
                 key={this.state.geoKey}
               />
-              {/* <Legend nhoods={this.state.nhoods} year_selected={this.state.year_selected} /> */}
             </div>
 
 
@@ -234,11 +237,14 @@ export default class MapPage extends Component {
             )}
         </Map>
         <Segment>
-          <h3>Year: {this.state.year_selected}</h3>
+          <Legend nhoods={this.state.nhoods} year_selected={this.state.year_selected} />
+        </Segment>
+        <Segment>
+          <h4>Year: {this.state.year_selected}</h4>
           <div style={sliderStyle}>
             <Slider
               min={2006}
-              max={2020}
+              max={2019}
               marks={marks}
               step={null}
               defaultValue={this.state.year_selected}
@@ -275,6 +281,9 @@ export default class MapPage extends Component {
               placeholder="Zone Category"
               onChange={this.handleChange.bind(this)}
             />
+
+          </Form.Group>
+          <Form.Group widths="equal">
             <Form.Input
               label="Year Built After"
               placeholder="Year Built After"
@@ -287,8 +296,6 @@ export default class MapPage extends Component {
               name="year_built_sec"
               onChange={this.handleChange.bind(this)}
             />
-          </Form.Group>
-          <Form.Group widths="equal">
             <Form.Input
               label="Minimum Price"
               placeholder="Minimum Price"
@@ -300,6 +307,13 @@ export default class MapPage extends Component {
               placeholder="Maximum Price"
               name="price_max"
               onChange={this.handleChange.bind(this)}
+            />
+          </Form.Group>
+          <Form.Group widths="equal">
+            <Form.Checkbox 
+            label='Contains Transit Stations'
+            name="transit"
+            onChange={this.handleToggle.bind(this)} 
             />
           </Form.Group>
           <Form.Button onClick={this.handleSubmit.bind(this)}>

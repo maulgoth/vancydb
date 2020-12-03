@@ -27,6 +27,8 @@ async function get(req, res, next) {
 
     context.price_max = parseInt(req.query.price_max, 10);
 
+    context.transit = req.query.transit;
+
     const rows = await neighborhoods.find(context);
 
     res.status(200).json(rows);
