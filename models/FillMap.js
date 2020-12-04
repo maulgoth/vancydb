@@ -21,7 +21,6 @@ async function find(context) {
         final[i].properties = {};
         final[i].properties.ncode = result.rows[i].ncode;
     }
-    
     return result.rows;
 }
 

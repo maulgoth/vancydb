@@ -117,7 +117,7 @@ export default class MapPage extends Component {
     math: "avg",
     year_selected: 2006,
     geoKey: "x", // This key change is necessary to refresh the GeoJSON, don't ask
-    price_min: 0,
+    price_min: 1,
     price_max: 987654321,
     transit: false
   };
@@ -147,7 +147,6 @@ export default class MapPage extends Component {
     this.setState({ year_selected: value });
     if (this.state.geoKey === "x") this.setState({ geoKey: "y" });
     else this.setState({ geoKey: "x" });
-    console.log(this.state.geoKey);
   };
 
   callApiFillMap = () => {
@@ -179,13 +178,17 @@ export default class MapPage extends Component {
       })
       .then((res) => {
         const nhoods = res.data;
-        console.log(nhoods);
+        // console.log(nhoods);
         this.setState({ nhoods, dataLoaded: true, formLoading: false });
       });
   };
 
   handleSubmit() {
     this.callApiData();
+    this.setState({
+      price_min: 1,
+      price_max: 20000000000,
+    })
   }
 
   componentDidMount() {

@@ -24,6 +24,12 @@ async function get(req, res, next) {
 
     context.ncode = req.query.ncode;
 
+    context.display = req.query.display;
+
+    context.price_min = parseInt(req.query.price_min, 10);
+
+    context.price_max = parseInt(req.query.price_max, 10);
+
     const rows = await charts.find(context);
 
     res.status(200).json(rows);

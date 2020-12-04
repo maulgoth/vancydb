@@ -95,7 +95,7 @@ export default class Map extends Component {
     display: "both",
     selection: "lv",
     math: "avg",
-    price_min: 0,
+    price_min: 1,
     price_max: 987654321,
     transit: false
   };
@@ -123,13 +123,16 @@ export default class Map extends Component {
           year_built_first: this.state.year_built_first,
           year_built_sec: this.state.year_built_sec,
           price_max: this.state.price_max,
-          price_min: this.state.price_min
+          price_min: this.state.price_min,
+          display: this.state.display
         },
       })
       .then((res) => {
         const nhoods = res.data;
         this.setState({ nhoods, isLoaded: true, formLoading: false });
+        console.log(this.state.nhoods);
       });
+      
   };
 
   handleSubmit() {
