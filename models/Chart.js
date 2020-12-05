@@ -49,49 +49,52 @@ async function find(context) {
   }
 
   else if (context.display === "nhood") {
-    console.log("nhood mode");
-    for (nhood = 1; nhood < 23; nhood++) {
-      let temp = [];
-      for (i = 2006; i < 2020; i++) {
-        let query = `SELECT 
-        ROUND(${math}(${selection}_${i}), 0) "dollarval"
-        FROM ${choice} x
-        JOIN property p ON x.pid = p.pid`;
+    if (context.ncode == 0) {
+      console.log("nhood all mode");
+      for (nhood = 1; nhood < 23; nhood++) {
+        let temp = [];
+        for (i = 2006; i < 2020; i++) {
+          let query = `SELECT 
+          ROUND(${math}(${selection}_${i}), 0) "dollarval"
+          FROM ${choice} x
+          JOIN property p ON x.pid = p.pid`;
 
 
-        if (context.z_category !== "all") {
-          query += `\nJOIN zones z ON p.zid = z.zid
-            WHERE z_category='${context.z_category}'`;
+          if (context.z_category !== "all") {
+            query += `\nJOIN zones z ON p.zid = z.zid
+              WHERE z_category='${context.z_category}'`;
+          }
+          else
+            query += `\nWHERE 1=1 `
+
+          query += `\n AND p.ncode = ${nhood} `;
+
+          const binds = {};
+
+          // YEAR_BUILT BETWEEN
+          if (context.year_built_first && context.year_built_sec) {
+            binds.year_built_first = context.year_built_first;
+            binds.year_built_sec = context.year_built_sec;
+            query +=
+              "\n AND year_built BETWEEN :year_built_first AND :year_built_sec";
+          }
+
+          // IF PRICE MIN AND PRICE MAX
+          if (context.price_min && context.price_max) {
+            binds.price_min = context.price_min;
+            binds.price_max = context.price_max;
+            query += `\n AND ${selection}_${i} BETWEEN :price_min AND :price_max`;
+          }
+
+          const result = await database.simpleExecute(query, binds);
+          result.rows["0"].year = i;
+          temp = temp.concat(result.rows);
         }
-        else
-          query += `\nWHERE 1=1 `
 
-        query += `\n AND p.ncode = ${nhood} `;
-
-        const binds = {};
-
-        // YEAR_BUILT BETWEEN
-        if (context.year_built_first && context.year_built_sec) {
-          binds.year_built_first = context.year_built_first;
-          binds.year_built_sec = context.year_built_sec;
-          query +=
-            "\n AND year_built BETWEEN :year_built_first AND :year_built_sec";
-        }
-
-        // IF PRICE MIN AND PRICE MAX
-        if (context.price_min && context.price_max) {
-          binds.price_min = context.price_min;
-          binds.price_max = context.price_max;
-          query += `\n AND ${selection}_${i} BETWEEN :price_min AND :price_max`;
-        }
-
-        const result = await database.simpleExecute(query, binds);
-        result.rows["0"].year = i;
-        temp = temp.concat(result.rows);
+        final[nhood - 1] = temp;
       }
-
-      final[nhood - 1] = temp;
     }
+
   }
 
 

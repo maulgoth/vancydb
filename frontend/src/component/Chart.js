@@ -11,6 +11,8 @@ import {
 } from "react-vis";
 import axios from "axios";
 
+
+
 const selections = [
   { key: "lv", value: "lv", text: "Land Value" },
   { key: "tl", value: "tl", text: "Tax Levy" },
@@ -139,28 +141,42 @@ export default class Map extends Component {
   }
 
   processData = (data) => {
-    if (this.state.display === "both") {
-      return data.map((e) => ({
-        x: e.year,
-        y: e.dollarval,
-      }));
+    if (this.state.display === "both" || (this.state.display === "nhood" && this.state.ncode != 0)) {
+      return (
+        <LineSeries
+          className="first-series"
+          data={data.map((e) => ({
+            x: e.year,
+            y: e.dollarval,
+          }))}
+          style={{
+            strokeLinejoin: "round",
+            strokeWidth: 3,
+          }}
+        />
+      );
     }
 
     else if (this.state.display === "nhood") {
-      let hoods;
-
-
-
-      return (<LineSeries
-        className="first-series"
-        data={hoods}
-        style={{
-          strokeLinejoin: "round",
-          strokeWidth: 4,
-        }}
-      />);
+      // let hoods;
+      return (
+        data.map((e, index) => (
+          <LineSeries
+            className="first-series"
+            data={this.state.isLoaded ? e.map((z) => ({
+              x: z.year,
+              y: z.dollarval,
+            }))
+              : null}
+            style={{
+              strokeLinejoin: "round",
+              strokeWidth: 1,
+            }}
+            key={"line_" + index}
+          />
+        ))
+      );
     }
-
   };
 
   render() {
@@ -185,6 +201,8 @@ export default class Map extends Component {
           <YAxis title="$ CAD" />
           {
             this.state.isLoaded ?
+              this.processData(this.state.nhoods)
+              :
               <LineSeries
                 className="first-series"
                 data={[{ x: 0, y: 0 }]}
@@ -192,14 +210,7 @@ export default class Map extends Component {
                   strokeLinejoin: "round",
                   strokeWidth: 4,
                 }}
-              /> : <LineSeries
-              className="first-series"
-              data={[{ x: 0, y: 0 }]}
-              style={{
-                strokeLinejoin: "round",
-                strokeWidth: 4,
-              }}
-            />
+              />
           }
           {/* <LineSeries
             className="first-series"
