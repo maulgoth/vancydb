@@ -117,13 +117,6 @@ const zones = [
   { key: 9, value: "One Family Dwelling", text: "One Family Dwelling" },
 ];
 
-const limits = [
-  { key: 0, value: 0, text: "First 5" },
-  { key: 1, value: 1, text: "Second 5" },
-  { key: 2, value: 2, text: "Third 6" },
-  { key: 3, value: 3, text: "Fourth 6" }
-]
-
 export default class Map extends Component {
   state = {
     isLoaded: false,
@@ -208,7 +201,6 @@ export default class Map extends Component {
         />
       );
     }
-
     else if (this.state.display === "nhood") {
       return (
         data.map((e, index) => (
@@ -226,6 +218,28 @@ export default class Map extends Component {
             }}
             // key={"line_" + index}
             onSeriesMouseOver={(event) => this.setState({ hovered: ITEMS[index] })}
+            onSeriesMouseOut={event => this.setState({ hovered: false })}
+          />
+        ))
+      );
+    }
+    else if (this.state.display === "zone") {
+      return (
+        data.map((e, index) => (
+          <LineSeries
+            className="first-series"
+            data={this.state.isLoaded ? e.map((z) => ({
+              x: z.year,
+              y: z.dollarval,
+              label: ZONEITEMS[index],
+            }))
+              : null}
+            style={{
+              strokeLinejoin: "round",
+              strokeWidth: 1,
+            }}
+            // key={"line_" + index}
+            onSeriesMouseOver={(event) => this.setState({ hovered: ZONEITEMS[index] })}
             onSeriesMouseOut={event => this.setState({ hovered: false })}
           />
         ))
