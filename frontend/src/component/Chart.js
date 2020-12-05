@@ -24,7 +24,7 @@ const maths = [
 ];
 
 const displays = [
-  { key: 'both', text: 'All Zones and Neighborhoods', value: 'both'},
+  { key: 'both', text: 'All Zones and Neighborhoods', value: 'both' },
   { key: 'zone', text: 'Zone', value: 'zone' },
   { key: 'nhood', text: 'Neighborhood', value: 'nhood' }
 ];
@@ -76,12 +76,7 @@ const zones = [
   { key: 9, value: "One Family Dwelling", text: "One Family Dwelling" },
 ];
 
-const processData = (data) => {
-  return data.map((e) => ({
-    x: e.year,
-    y: e.dollarval,
-  }));
-};
+
 
 export default class Map extends Component {
   state = {
@@ -102,13 +97,13 @@ export default class Map extends Component {
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value });
 
-  handleDisplayChange(e, {name, value}) {
+  handleDisplayChange(e, { name, value }) {
     if (value === "zone")
-      this.setState({z_category: "all", [name]: value});
+      this.setState({ z_category: "all", [name]: value });
     else if (value === "nhood")
-      this.setState({ncode: 0, [name]: value});
+      this.setState({ ncode: 0, [name]: value });
     else if (value === "both")
-      this.setState({ncode: 0, z_category: "all", [name]: value});
+      this.setState({ ncode: 0, z_category: "all", [name]: value });
   }
 
   callApi = () => {
@@ -132,7 +127,7 @@ export default class Map extends Component {
         this.setState({ nhoods, isLoaded: true, formLoading: false });
         console.log(this.state.nhoods);
       });
-      
+
   };
 
   handleSubmit() {
@@ -140,8 +135,33 @@ export default class Map extends Component {
   }
 
   componentDidMount() {
-    this.callApi();
+    //this.callApi();
   }
+
+  processData = (data) => {
+    if (this.state.display === "both") {
+      return data.map((e) => ({
+        x: e.year,
+        y: e.dollarval,
+      }));
+    }
+
+    else if (this.state.display === "nhood") {
+      let hoods;
+
+
+
+      return (<LineSeries
+        className="first-series"
+        data={hoods}
+        style={{
+          strokeLinejoin: "round",
+          strokeWidth: 4,
+        }}
+      />);
+    }
+
+  };
 
   render() {
     return (
@@ -163,18 +183,36 @@ export default class Map extends Component {
             tickFormat={(v) => `${v}`}
           />
           <YAxis title="$ CAD" />
-          <LineSeries
+          {
+            this.state.isLoaded ?
+              <LineSeries
+                className="first-series"
+                data={[{ x: 0, y: 0 }]}
+                style={{
+                  strokeLinejoin: "round",
+                  strokeWidth: 4,
+                }}
+              /> : <LineSeries
+              className="first-series"
+              data={[{ x: 0, y: 0 }]}
+              style={{
+                strokeLinejoin: "round",
+                strokeWidth: 4,
+              }}
+            />
+          }
+          {/* <LineSeries
             className="first-series"
             data={
               this.state.isLoaded
-                ? processData(this.state.nhoods)
+                ? this.processData(this.state.nhoods)
                 : [{ x: 0, y: 0 }]
             }
             style={{
               strokeLinejoin: "round",
               strokeWidth: 4,
             }}
-          />
+          /> */}
         </XYPlot>
         <Form loading={this.state.formLoading}>
           <Form.Group widths="equal">
@@ -214,18 +252,18 @@ export default class Map extends Component {
                 value={this.state.ncode}
                 placeholder="Neighborhood"
                 onChange={this.handleChange.bind(this)}
-              /> ) :
+              />) :
               this.state.display === "nhood" ? (<Form.Select
-              fluid
-              label="Zone Category"
-              options={zones}
-              name="z_category"
-              value={this.state.z_category}
-              placeholder="Zone Category"
-              onChange={this.handleChange.bind(this)}
-            />) : this.state.display === "both" ? <div></div> : <div></div>}
+                fluid
+                label="Zone Category"
+                options={zones}
+                name="z_category"
+                value={this.state.z_category}
+                placeholder="Zone Category"
+                onChange={this.handleChange.bind(this)}
+              />) : this.state.display === "both" ? <div></div> : <div></div>}
 
-         
+
           </Form.Group>
           {/* <Form.Group>
           <h3>{this.state.ncode}</h3>
