@@ -180,6 +180,9 @@ export default class MapPage extends Component {
         const nhoods = res.data;
         // console.log(nhoods);
         this.setState({ nhoods, dataLoaded: true, formLoading: false });
+      })
+      .catch(error => {
+        this.setState({ formLoading: false });
       });
   };
 

@@ -8,6 +8,8 @@ import {
   HorizontalGridLines,
   VerticalGridLines,
   LineSeries,
+  DiscreteColorLegend,
+  Hint
 } from "react-vis";
 import axios from "axios";
 
@@ -30,6 +32,43 @@ const displays = [
   { key: 'zone', text: 'Zone', value: 'zone' },
   { key: 'nhood', text: 'Neighborhood', value: 'nhood' }
 ];
+
+const ITEMS = [
+  'Dunbar-Southlands',
+  'Kerrisdale',
+  'Killarney',
+  'Kitsilano',
+  'South Cambie',
+  'Victoria-Fraserview',
+  'Kensington-Cedar Cottage',
+  'Mount Pleasant',
+  'Oakridge',
+  'Renfrew-Collingwood',
+  'Sunset',
+  'West Point Grey',
+  'Arbutus-Ridge',
+  'Downtown',
+  'Fairview',
+  'Grandview-Woodland',
+  'Hastings-Sunrise',
+  'Marpole',
+  'Riley Park',
+  'Shaughnessy',
+  'Strathcona',
+  'West End '
+]
+
+const ZONEITEMS = [
+  "Comprehensive Development",
+  "Two Family Dwelling",
+  "Industrial",
+  "Historic Area",
+  "Commercial",
+  "Light Industrial",
+  "Limited Agricultural",
+  "Multiple Family Dwelling",
+  "One Family Dwelling"
+]
 
 const neighborhoods = [
   { key: 0, value: 0, text: "All Neighborhoods" },
@@ -78,7 +117,12 @@ const zones = [
   { key: 9, value: "One Family Dwelling", text: "One Family Dwelling" },
 ];
 
-
+const limits = [
+  { key: 0, value: 0, text: "First 5" },
+  { key: 1, value: 1, text: "Second 5" },
+  { key: 2, value: 2, text: "Third 6" },
+  { key: 3, value: 3, text: "Fourth 6" }
+]
 
 export default class Map extends Component {
   state = {
@@ -89,23 +133,26 @@ export default class Map extends Component {
     year_built_bw_sec: 2019,
     ncode: 0,
     z_category: "all",
-    display: "both",
+    // display: "both",
+    display: "nhood",
     selection: "lv",
     math: "avg",
     price_min: 1,
     price_max: 987654321,
-    transit: false
+    transit: false,
+    hovered: null,
+    limit: 0,
   };
 
-  handleChange = (e, { name, value }) => this.setState({ [name]: value });
+  handleChange = (e, { name, value }) => this.setState({ [name]: value, isLoaded: false });
 
   handleDisplayChange(e, { name, value }) {
     if (value === "zone")
-      this.setState({ z_category: "all", [name]: value });
+      this.setState({ z_category: "all", [name]: value, isLoaded: false });
     else if (value === "nhood")
-      this.setState({ ncode: 0, [name]: value });
+      this.setState({ ncode: 0, [name]: value, isLoaded: false });
     else if (value === "both")
-      this.setState({ ncode: 0, z_category: "all", [name]: value });
+      this.setState({ ncode: 0, z_category: "all", [name]: value, isLoaded: false });
   }
 
   callApi = () => {
@@ -121,13 +168,17 @@ export default class Map extends Component {
           year_built_sec: this.state.year_built_sec,
           price_max: this.state.price_max,
           price_min: this.state.price_min,
-          display: this.state.display
+          display: this.state.display,
+          limit: this.state.limit
         },
       })
       .then((res) => {
         const nhoods = res.data;
         this.setState({ nhoods, isLoaded: true, formLoading: false });
         console.log(this.state.nhoods);
+      })
+      .catch(error => {
+        this.setState({ formLoading: false });
       });
 
   };
@@ -141,7 +192,8 @@ export default class Map extends Component {
   }
 
   processData = (data) => {
-    if (this.state.display === "both" || (this.state.display === "nhood" && this.state.ncode != 0)) {
+    if (this.state.display === "both" ||
+      (this.state.display === "nhood" && this.state.ncode != 0)) {
       return (
         <LineSeries
           className="first-series"
@@ -158,7 +210,6 @@ export default class Map extends Component {
     }
 
     else if (this.state.display === "nhood") {
-      // let hoods;
       return (
         data.map((e, index) => (
           <LineSeries
@@ -166,13 +217,16 @@ export default class Map extends Component {
             data={this.state.isLoaded ? e.map((z) => ({
               x: z.year,
               y: z.dollarval,
+              label: ITEMS[index],
             }))
               : null}
             style={{
               strokeLinejoin: "round",
               strokeWidth: 1,
             }}
-            key={"line_" + index}
+            // key={"line_" + index}
+            onSeriesMouseOver={(event) => this.setState({ hovered: ITEMS[index] })}
+            onSeriesMouseOut={event => this.setState({ hovered: false })}
           />
         ))
       );
@@ -212,19 +266,12 @@ export default class Map extends Component {
                 }}
               />
           }
-          {/* <LineSeries
-            className="first-series"
-            data={
-              this.state.isLoaded
-                ? this.processData(this.state.nhoods)
-                : [{ x: 0, y: 0 }]
-            }
-            style={{
-              strokeLinejoin: "round",
-              strokeWidth: 4,
-            }}
-          /> */}
+          {/* {this.state.hovered ? <Hint value={this.state.hovered}>
+            <p>{ this.state.hovered }</p>
+          </Hint> : null} */}
+          {/* {this.state.hovered ? console.log(this.state.hovered) : null} */}
         </XYPlot>
+        <h4>Line:    {this.state.hovered ? this.state.hovered : null}</h4>
         <Form loading={this.state.formLoading}>
           <Form.Group widths="equal">
             <Form.Select
@@ -264,23 +311,18 @@ export default class Map extends Component {
                 placeholder="Neighborhood"
                 onChange={this.handleChange.bind(this)}
               />) :
-              this.state.display === "nhood" ? (<Form.Select
-                fluid
-                label="Zone Category"
-                options={zones}
-                name="z_category"
-                value={this.state.z_category}
-                placeholder="Zone Category"
-                onChange={this.handleChange.bind(this)}
-              />) : this.state.display === "both" ? <div></div> : <div></div>}
-
-
+              this.state.display === "nhood" ? (
+                <Form.Select
+                  fluid
+                  label="Zone Category"
+                  options={zones}
+                  name="z_category"
+                  value={this.state.z_category}
+                  placeholder="Zone Category"
+                  onChange={this.handleChange.bind(this)}
+                />
+              ) : this.state.display === "both" ? <div></div> : <div></div>}
           </Form.Group>
-          {/* <Form.Group>
-          <h3>{this.state.ncode}</h3>
-          <h3>{String(this.state.z_category)}</h3>
-          <h3>{String(this.state.display)}</h3>
-          </Form.Group> */}
           <Form.Group widths="equal">
             <Form.Input
               label="Year Built After"

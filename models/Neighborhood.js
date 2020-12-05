@@ -13,7 +13,7 @@ async function find(context) {
   else if (selection == "tl") choice = "tax_levy";
   const binds = {};
 
-  for (year = 2006; year < 2008; year++) {
+  for (year = 2006; year < 2020; year++) {
     query = "";
     query += `WITH averages AS ( \n`;
     for (j = 1; j < 23; j++) {
