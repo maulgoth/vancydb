@@ -56,6 +56,7 @@ async function find(context) {
 
       const result = await database.simpleExecute(query, binds);
       result.rows["0"].year = i;
+
       final = final.concat(result.rows);
     }
   }

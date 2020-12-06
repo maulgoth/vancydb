@@ -4,6 +4,7 @@ const properties = require('../controllers/properties');
 const neighborhoods = require('../controllers/neighborhoods');
 const charts = require('../controllers/charts');
 const fillmap = require('../controllers/fillmap');
+const hpis = require('../controllers/hpis');
 
 
 router.route('/properties/:pid?')
@@ -14,6 +15,12 @@ router.route('/properties/:pid?')
 
 router.route('/neighborhoods/')
     .get(neighborhoods.get);
+    // .post(properties.post)
+    // .put(properties.put)
+    // .delete(properties.delete);
+
+router.route('/hpis/')
+    .get(hpis.get);
     // .post(properties.post)
     // .put(properties.put)
     // .delete(properties.delete);

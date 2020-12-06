@@ -5,7 +5,7 @@ import { Menu } from 'semantic-ui-react';
  */
 const NavBar = () => {
     return(       
-       <Menu inverted pointing widths={2}>
+       <Menu inverted pointing widths={3}>
       <Menu.Item
         name='Chart'
         href="/chart"
@@ -13,6 +13,10 @@ const NavBar = () => {
       <Menu.Item
         name='Map'
         href="/map"
+      />
+      <Menu.Item
+        name='HPI'
+        href="/hpi"
       />
     </Menu>);
 

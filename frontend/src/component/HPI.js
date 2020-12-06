@@ -126,8 +126,7 @@ export default class Map extends Component {
     year_built_bw_sec: 2019,
     ncode: 0,
     z_category: "all",
-    // display: "both",
-    display: "nhood",
+    display: "both",
     selection: "lv",
     math: "avg",
     price_min: 1,
@@ -138,10 +137,10 @@ export default class Map extends Component {
   };
 
   handleChange = (e, { name, value }) => {
-      if (this.state.price_max == null)
-        this.setState({price_max: 987654321});
-      else
-        this.setState({ [name]: value, isLoaded: false });
+    if (this.state.price_max == null)
+      this.setState({ price_max: 987654321 });
+    else
+      this.setState({ [name]: value, isLoaded: false });
   }
 
   handleDisplayChange(e, { name, value }) {
@@ -156,7 +155,7 @@ export default class Map extends Component {
   callApi = () => {
     this.setState({ isLoaded: false, formLoading: true });
     axios
-      .get("http://localhost:5000/api/charts", {
+      .get("http://localhost:5000/api/hpis", {
         params: {
           selection: this.state.selection,
           math: this.state.math,
@@ -206,58 +205,33 @@ export default class Map extends Component {
         />
       );
     }
-    else if (this.state.display === "nhood") {
-      return (
-        data.map((e, index) => (
-          <LineSeries
-            className="first-series"
-            data={this.state.isLoaded ? e.map((z) => ({
-              x: z.year,
-              y: z.dollarval,
-              label: ITEMS[index],
-            }))
-              : null}
-            style={{
-              strokeLinejoin: "round",
-              strokeWidth: 1,
-            }}
-            // key={"line_" + index}
-            onSeriesMouseOver={(event) => this.setState({ hovered: ITEMS[index] })}
-            onSeriesMouseOut={event => this.setState({ hovered: false })}
-          />
-        ))
-      );
-    }
-    else if (this.state.display === "zone") {
-      return (
-        data.map((e, index) => (
-          <LineSeries
-            className="first-series"
-            data={this.state.isLoaded ? e.map((z) => ({
-              x: z.year,
-              y: z.dollarval,
-              label: ZONEITEMS[index],
-            }))
-              : null}
-            style={{
-              strokeLinejoin: "round",
-              strokeWidth: 1,
-            }}
-            // key={"line_" + index}
-            onSeriesMouseOver={(event) => this.setState({ hovered: ZONEITEMS[index] })}
-            onSeriesMouseOut={event => this.setState({ hovered: false })}
-          />
-        ))
-      );
-    }
+    
   };
 
+  processDataHPI = (data) => {
+    return (
+      <LineSeries
+        className="first-series"
+        data={data.map((e) => ({
+          x: e.year,
+          y: e.hpi,
+        }))}
+        style={{
+          strokeLinejoin: "round",
+          strokeWidth: 3,
+        }}
+      />
+    );
+  }
+
+
+  
   render() {
     return (
       <div>
         <XYPlot
           width={800}
-          height={600}
+          height={300}
           xDomain={[2006, 2019]}
           margin={{ left: 100, right: 100 }}
         >
@@ -285,11 +259,40 @@ export default class Map extends Component {
                 }}
               />
           }
-          {/* {this.state.hovered ? <Hint value={this.state.hovered}>
-            <p>{ this.state.hovered }</p>
-          </Hint> : null} */}
-          {/* {this.state.hovered ? console.log(this.state.hovered) : null} */}
         </XYPlot>
+        {/* HPI BELOW */}
+        <XYPlot
+          width={800}
+          height={300}
+          xDomain={[2006, 2019]}
+          margin={{ left: 100, right: 100 }}
+        >
+          <HorizontalGridLines style={{ stroke: "#B7E9ED" }} />
+          <VerticalGridLines style={{ stroke: "#B7E9ED" }} />
+          <XAxis
+            style={{
+              line: { stroke: "#ADDDE1" },
+              ticks: { stroke: "#ADDDE1" },
+              text: { stroke: "none", fill: "#6b6b76", fontWeight: 600 },
+            }}
+            tickFormat={(v) => `${v}`}
+          />
+          <YAxis title="$ CAD" />
+          {
+            this.state.isLoaded ?
+              this.processDataHPI(this.state.nhoods)
+              :
+              <LineSeries
+                className="first-series"
+                data={[{ x: 0, y: 0 }]}
+                style={{
+                  strokeLinejoin: "round",
+                  strokeWidth: 4,
+                }}
+              />
+          }
+        </XYPlot>
+        {/* END HPI */}
         <h4>Line:    {this.state.hovered ? this.state.hovered : null}</h4>
         <Form loading={this.state.formLoading}>
           <Form.Group widths="equal">
@@ -311,7 +314,7 @@ export default class Map extends Component {
               placeholder="Statistic"
               onChange={this.handleChange.bind(this)}
             />
-            <Form.Select
+            {/* <Form.Select
               fluid
               label="Display"
               options={displays}
@@ -319,28 +322,16 @@ export default class Map extends Component {
               value={this.state.display}
               placeholder=""
               onChange={this.handleDisplayChange.bind(this)}
+            /> */}
+            <Form.Select
+              fluid
+              label="Zone Category"
+              options={zones}
+              name="z_category"
+              value={this.state.z_category}
+              placeholder="Zone Category"
+              onChange={this.handleChange.bind(this)}
             />
-            {this.state.display === "zone" ? (
-              <Form.Select
-                fluid
-                label="Neighborhood"
-                options={neighborhoods}
-                name="ncode"
-                value={this.state.ncode}
-                placeholder="Neighborhood"
-                onChange={this.handleChange.bind(this)}
-              />) :
-              this.state.display === "nhood" ? (
-                <Form.Select
-                  fluid
-                  label="Zone Category"
-                  options={zones}
-                  name="z_category"
-                  value={this.state.z_category}
-                  placeholder="Zone Category"
-                  onChange={this.handleChange.bind(this)}
-                />
-              ) : this.state.display === "both" ? <div></div> : <div></div>}
           </Form.Group>
           <Form.Group widths="equal">
             <Form.Input
