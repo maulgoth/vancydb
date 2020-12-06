@@ -22,42 +22,33 @@ async function find(context) {
     "One Family Dwelling"
   ]
 
-
   for (i = 2006; i < 2020; i++) {
-    let query = `SELECT 
-      ROUND(${math}(${selection}_${i}), 0) "dollarval"
-      FROM ${choice} x
-      JOIN property p ON x.pid = p.pid`;
 
-      //  ZONES 
-      if (context.z_category != "all") {
-        query += `\nJOIN zones z ON p.zid = z.zid
-          WHERE z_category='${context.z_category}'`;
-      }
+    // ROUND(${math}(${selection}_${i}), 0) "dollarval",
 
-      // NCODES
-      if (context.ncode != 0)
-        query += `\n AND p.ncode = ${context.ncode} `;
+    let query = `SELECT ${selection}_${i} AS "dollarval"`;
+    if (i === 2006)
+      query += `, line_1, line_2, line_3, line_4, line_5, nhood_name`;
+    query += ` FROM ${choice} x JOIN property p ON x.pid = p.pid `;
+    if (i === 2006) {
+      query += `JOIN neighborhoods n ON p.ncode = n.ncode
+      JOIN narrative_legal l ON p.pid = l.pid`;
+    }
+    query += ` JOIN address a ON a.pid = p.pid`;
+    query += ` 
+      WHERE ('${context.civic_number}' = FROM_CIVIC_NUMBER OR
+      '${context.civic_number}' = TO_CIVIC_NUMBER) AND
+      '${context.street_name}' = STREET_NAME AND
+      '${context.postal_code}' = PROPERTY_POSTAL_CODE
+      
+      FETCH FIRST 1 ROW ONLY
+      `;
 
     const binds = {};
-
-    // YEAR_BUILT BETWEEN
-    if (context.year_built_first && context.year_built_sec) {
-      binds.year_built_first = context.year_built_first;
-      binds.year_built_sec = context.year_built_sec;
-      query +=
-        "\n AND year_built BETWEEN :year_built_first AND :year_built_sec";
-    }
-
-    // IF PRICE MIN AND PRICE MAX
-    //if (context.price_min && context.price_max) {
-    binds.price_min = context.price_min;
-    binds.price_max = context.price_max;
-    query += `\n AND ${selection}_${i} BETWEEN :price_min AND :price_max`;
-    //}
-
+    // console.log("\n\n\n" + query + "\n\n\n");
     const result = await database.simpleExecute(query, binds);
-    result.rows["0"].year = i;
+    if (result.rows["0"])
+      result.rows["0"].year = i;
 
     // GET HPI
 

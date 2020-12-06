@@ -10,8 +10,8 @@ const database = require('./services/database');
 const dbConfig = require('./config/database');
 
 // Add 10 threads beyond default 4 for Oracle pool connections 
-const defaultThreadPoolSize = 4;
-process.env.UV_THREADPOOL_SIZE = dbConfig.testPool.poolMax + defaultThreadPoolSize;
+// const defaultThreadPoolSize = 4;
+// process.env.UV_THREADPOOL_SIZE = dbConfig.testPool.poolMax + defaultThreadPoolSize;
 
 // Logging
 app.use(morgan('dev'));

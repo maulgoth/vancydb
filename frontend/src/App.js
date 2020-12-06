@@ -4,6 +4,7 @@ import Chart from "./component/Chart";
 import MapPage from "./component/MapPage";
 import SearchBar from "./component/SearchBar";
 import HPI from "./component/HPI";
+import Address from "./component/Address";
 
 import { Grid, GridRow, Segment } from "semantic-ui-react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
@@ -28,6 +29,11 @@ function App() {
           <Route path="/hpi">
             <Segment>
               <HPI />
+            </Segment>
+          </Route>
+          <Route path="/address">
+            <Segment>
+              <Address />
             </Segment>
           </Route>
         </Switch>

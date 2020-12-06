@@ -125,7 +125,6 @@ export default class Map extends Component {
     year_built_bw_first: 1900,
     year_built_bw_sec: 2019,
     ncode: 0,
-    z_category: "all",
     display: "both",
     selection: "lv",
     math: "avg",
@@ -133,7 +132,9 @@ export default class Map extends Component {
     price_max: 987654321,
     transit: false,
     hovered: null,
-    limit: 0,
+    civic_number: '1450',
+    street_name: 'LABURNUM ST',
+    postal_code: 'V6J 3W3'
   };
 
   handleChange = (e, { name, value }) => {
@@ -155,7 +156,7 @@ export default class Map extends Component {
   callApi = () => {
     this.setState({ isLoaded: false, formLoading: true });
     axios
-      .get("http://localhost:5000/api/hpis", {
+      .get("http://localhost:5000/api/addresses", {
         params: {
           selection: this.state.selection,
           math: this.state.math,
@@ -166,7 +167,9 @@ export default class Map extends Component {
           price_max: this.state.price_max,
           price_min: this.state.price_min,
           display: this.state.display,
-          limit: this.state.limit
+          civic_number: this.state.civic_number,
+          street_name: this.state.street_name,
+          postal_code: this.state.postal_code
         },
       })
       .then((res) => {
@@ -205,7 +208,7 @@ export default class Map extends Component {
         />
       );
     }
-    
+
   };
 
   processDataHPI = (data) => {
@@ -216,13 +219,13 @@ export default class Map extends Component {
           x: e.year,
           y: e.hpi,
         }))}
-        
+
       />
     );
   }
 
 
-  
+
   render() {
     return (
       <div>
@@ -265,8 +268,8 @@ export default class Map extends Component {
           xDomain={[2006, 2019]}
           margin={{ left: 100, right: 100 }}
         >
-          <HorizontalGridLines  />
-          <VerticalGridLines  />
+          <HorizontalGridLines />
+          <VerticalGridLines />
           <XAxis
             style={{
               text: { stroke: "none", fontWeight: 600 },
@@ -286,7 +289,24 @@ export default class Map extends Component {
           }
         </XYPlot>
         {/* END HPI */}
-        <h4>Line:    {this.state.hovered ? this.state.hovered : null}</h4>
+        {/* <h4>Neighborhood: {this.state.hovered ? this.state.hovered : null}</h4> */}
+        {this.state.isLoaded ?
+          (<div>
+            <h4>
+              Neighborhood:
+            {"   " + this.state.nhoods[0].NHOOD_NAME}
+            </h4>
+            <p>
+              {this.state.nhoods[0].LINE_1}
+              <br/>
+              {this.state.nhoods[0].LINE_2}
+              <br/>
+              {this.state.nhoods[0].LINE_3}
+              <br/>
+              {this.state.nhoods[0].LINE_4}
+            </p>
+          </div>
+          ) : null}
         <Form loading={this.state.formLoading}>
           <Form.Group widths="equal">
             <Form.Select
@@ -307,57 +327,27 @@ export default class Map extends Component {
               placeholder="Statistic"
               onChange={this.handleChange.bind(this)}
             />
-            {/* <Form.Select
-              fluid
-              label="Display"
-              options={displays}
-              name="display"
-              value={this.state.display}
-              placeholder=""
-              onChange={this.handleDisplayChange.bind(this)}
-            /> */}
-            <Form.Select
-              fluid
-              label="Zone Category"
-              options={zones}
-              name="z_category"
-              value={this.state.z_category}
-              placeholder="Zone Category"
-              onChange={this.handleChange.bind(this)}
-            />
-            <Form.Select
-                fluid
-                label="Neighborhood"
-                options={neighborhoods}
-                name="ncode"
-                value={this.state.ncode}
-                placeholder="Neighborhood"
-                onChange={this.handleChange.bind(this)}
-              />
           </Form.Group>
           <Form.Group widths="equal">
             <Form.Input
-              label="Year Built After"
-              placeholder="Year Built After"
-              name="year_built_first"
+              label="Civic Number"
+              placeholder="Civic Number"
+              name="civic_number"
+              value={this.state.civic_number}
               onChange={this.handleChange.bind(this)}
             />
             <Form.Input
-              label="Year Built Before"
-              placeholder="Year Built Before"
-              name="year_built_sec"
+              label="Street Name"
+              placeholder="Street Name"
+              name="street_name"
+              value={this.state.street_name}
               onChange={this.handleChange.bind(this)}
             />
             <Form.Input
-              label="Minimum Price"
-              placeholder="Minimum Price"
-              name="price_min"
-              onChange={this.handleChange.bind(this)}
-            />
-            <Form.Input
-              label="Maximum Price"
-              placeholder="Maximum Price"
-              name="price_max"
+              label="Postal Code"
+              placeholder="Postal Code"
+              name="postal_code"
+              value={this.state.postal_code}
               onChange={this.handleChange.bind(this)}
             />
           </Form.Group>

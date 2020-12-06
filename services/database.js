@@ -18,7 +18,7 @@ function simpleExecute(statement, binds = [], opts = {}) {
     opts.autoCommit = true;
   
     try {
-      conn = await oracledb.getConnection();
+      conn = await oracledb.getConnection(dbConfig.testPool);
   
       const result = await conn.execute(statement, binds, opts);
   
