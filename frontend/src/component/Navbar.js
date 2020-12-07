@@ -4,8 +4,12 @@ import { Menu } from 'semantic-ui-react';
  * Component used to perform navigation between different app views
  */
 const NavBar = () => {
-    return(       
-       <Menu inverted pointing widths={4}>
+  return (
+    <Menu inverted pointing widths={5}>
+      <Menu.Item 
+        name='Home'
+        href="/"
+      />
       <Menu.Item
         name='Chart'
         href="/chart"
@@ -24,7 +28,7 @@ const NavBar = () => {
       />
     </Menu>);
 
-    
+
 }
 
 export default NavBar;

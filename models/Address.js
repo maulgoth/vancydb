@@ -44,6 +44,9 @@ async function find(context) {
       FETCH FIRST 1 ROW ONLY
       `;
 
+      if (i === 2006)
+        console.log(query);
+
     const binds = {};
     // console.log("\n\n\n" + query + "\n\n\n");
     const result = await database.simpleExecute(query, binds);
@@ -59,6 +62,8 @@ async function find(context) {
     // console.log(hpi.rows);
     result.rows["0"].hpi = hpi.rows["0"].HPI;
 
+    if (i === 2006)
+      console.log(query);
 
     final = final.concat(result.rows);
   }

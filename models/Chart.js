@@ -23,6 +23,7 @@ async function find(context) {
   ]
 
   if (context.display === "both") {
+    console.log("both");
     for (i = 2006; i < 2020; i++) {
       let query = `SELECT 
       ROUND(${math}(${selection}_${i}), 0) "dollarval"
@@ -54,6 +55,9 @@ async function find(context) {
       query += `\n AND ${selection}_${i} BETWEEN :price_min AND :price_max`;
       //}
 
+      if (i === 2006)
+        console.log(query);
+
       const result = await database.simpleExecute(query, binds);
       result.rows["0"].year = i;
 
@@ -63,9 +67,21 @@ async function find(context) {
 
   else if (context.display === "nhood") {
     console.log("nhood all mode");
-    for (nhood = 1; nhood < 23; nhood++) {
+
+    if (context.range === 1) {nhoodStart = 1; nhoodMax = 5}
+    else if (context.range === 2) {nhoodStart = 1; nhoodMax = 23}
+    // else if (context.range === 3) {nhoodStart = 9; nhoodMax = 13}
+    // else if (context.range === 4) {nhoodStart = 13; nhoodMax = 17}
+    // else if (context.range === 5) {nhoodStart = 17; nhoodMax = 21}
+    // else if (context.range === 6) {nhoodStart = 21; nhoodMax = 23}
+
+
+
+    for (nhood = nhoodStart; nhood < nhoodMax; nhood++) {
+      console.log(nhood);
       let temp = [];
       for (i = 2006; i < 2020; i++) {
+        //console.log(i);
         let query = `SELECT 
           ROUND(${math}(${selection}_${i}), 0) "dollarval"
           FROM ${choice} x
@@ -78,7 +94,9 @@ async function find(context) {
         else
           query += `\nWHERE 1=1 `
 
-        query += `\n AND p.ncode = ${nhood} `;
+        query += `\n AND p.ncode = ${nhood} 
+        AND ${selection}_${i} IS NOT NULL
+        `;
 
         const binds = {};
 
@@ -90,12 +108,15 @@ async function find(context) {
             "\n AND year_built BETWEEN :year_built_first AND :year_built_sec";
         }
 
-        // IF PRICE MIN AND PRICE MAX
+        //IF PRICE MIN AND PRICE MAX
         if (context.price_min && context.price_max) {
           binds.price_min = context.price_min;
           binds.price_max = context.price_max;
           query += `\n AND ${selection}_${i} BETWEEN :price_min AND :price_max`;
         }
+
+        if (i === 2006 && nhood === nhoodStart)
+          console.log(query);
 
         const result = await database.simpleExecute(query, binds);
         result.rows["0"].year = i;
@@ -109,8 +130,10 @@ async function find(context) {
   else if (context.display === "zone") {
     console.log("zone all mode");
     for (currzone = 0; currzone < ZONEITEMS.length; currzone++) {
+      console.log(currzone);
       let temp = [];
       for (i = 2006; i < 2020; i++) {
+        //console.log(i);
         let query = `SELECT 
           ROUND(${math}(${selection}_${i}), 0) "dollarval"
           FROM ${choice} x
@@ -139,6 +162,9 @@ async function find(context) {
           query += `\n AND ${selection}_${i} BETWEEN :price_min AND :price_max`;
         }
 
+        if (i === 2006 && currzone === 0)
+          console.log(query);
+
         const result = await database.simpleExecute(query, binds);
         result.rows["0"].year = i;
         temp = temp.concat(result.rows);
@@ -148,7 +174,7 @@ async function find(context) {
     }
   }
 
-  // console.log(final);
+  // //console.log(final);
   return final;
 
 

@@ -1,4 +1,4 @@
-const charts = require('../models/Chart');
+const addresses = require('../models/GetCount');
 
 async function get(req, res, next) {
   try {
@@ -30,9 +30,13 @@ async function get(req, res, next) {
 
     context.price_max = parseInt(req.query.price_max, 10);
 
-    context.range = parseInt(req.query.range, 10);
+    context.civic_number = req.query.civic_number;
+
+    context.street_name = req.query.street_name;
+
+    context.postal_code = req.query.postal_code;
     
-    const rows = await charts.find(context);
+    const rows = await addresses.find(context);
 
     res.status(200).json(rows);
 

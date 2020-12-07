@@ -7,7 +7,6 @@ const fillmap = require('../controllers/fillmap');
 const hpis = require('../controllers/hpis');
 const addresses = require('../controllers/addresses');
 
-
 router.route('/properties/:pid?')
     .get(properties.get);
 // .post(properties.post)
@@ -19,6 +18,8 @@ router.route('/neighborhoods/')
 // .post(properties.post)
 // .put(properties.put)
 // .delete(properties.delete);
+
+
 
 router.route('/hpis/')
     .get(hpis.get);

@@ -6,7 +6,7 @@ import SearchBar from "./component/SearchBar";
 import HPI from "./component/HPI";
 import Address from "./component/Address";
 
-import { Grid, GridRow, Segment } from "semantic-ui-react";
+import { Grid, GridRow, Segment, Image } from "semantic-ui-react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 function App() {
@@ -14,8 +14,13 @@ function App() {
     <Router>
       <div className="App">
         <NavBar />
-        {/* <SearchBar/> */}
         <Switch>
+          <Route exact path="/">
+            <Segment>
+              {/* <h1>Vancouver Property Database</h1> */}
+              <Image fluid src='https://res.cloudinary.com/simpleview/image/upload/v1486505969/clients/vancouverbc/Aerial_Sunset_Vancouver_d3_copy_1bb86ed0-1edc-4cda-841d-0b033ca0bb72.jpg' />
+            </Segment>
+          </Route>
           <Route path="/chart">
             <Segment>
               <Chart />

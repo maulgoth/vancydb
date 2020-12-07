@@ -70,6 +70,11 @@ const ZONEITEMS = [
   "One Family Dwelling"
 ]
 
+const RANGES = [
+  { key: 1, value: 1, text: "1-4" },
+  { key: 2, value: 2, text: "All Neighborhoods" },
+]
+
 const neighborhoods = [
   { key: 0, value: 0, text: "All Neighborhoods" },
   { key: 1, value: 1, text: "1 - Dunbar-Southlands" },
@@ -134,7 +139,7 @@ export default class Map extends Component {
     price_max: 987654321,
     transit: false,
     hovered: null,
-    limit: 0,
+    range: 1
   };
 
   handleChange = (e, { name, value }) => {
@@ -167,7 +172,7 @@ export default class Map extends Component {
           price_max: this.state.price_max,
           price_min: this.state.price_min,
           display: this.state.display,
-          limit: this.state.limit
+          range: this.state.range
         },
       })
       .then((res) => {
@@ -257,7 +262,7 @@ export default class Map extends Component {
       <div>
         <XYPlot
           width={800}
-          height={600}
+          height={500}
           xDomain={[2006, 2019]}
           margin={{ left: 100, right: 100 }}
         >
@@ -367,6 +372,17 @@ export default class Map extends Component {
               name="price_max"
               onChange={this.handleChange.bind(this)}
             />
+            {this.state.display === "nhood" ? (
+              <Form.Select
+              fluid
+              label="Select Range"
+              options={RANGES}
+              name="range"
+              value={this.state.range}
+              onChange={this.handleChange.bind(this)}
+            />) :
+              null}
+            
           </Form.Group>
           <Form.Button onClick={this.handleSubmit.bind(this)}>
             Search

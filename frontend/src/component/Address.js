@@ -261,7 +261,6 @@ export default class Map extends Component {
           }
         </XYPlot>
         {/* HPI BELOW */}
-        <h4>HPI</h4>
         <XYPlot
           width={800}
           height={300}
@@ -276,7 +275,7 @@ export default class Map extends Component {
             }}
             tickFormat={(v) => `${v}`}
           />
-          <YAxis title="$ CAD" />
+          <YAxis title="HPI in $ CAD" />
           {
             this.state.isLoaded ?
               this.processDataHPI(this.state.nhoods)
